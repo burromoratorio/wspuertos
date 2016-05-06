@@ -12,5 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/reenvios');
 });
+
+Route::get('/reenvios', 'ReenvioController@index');
+Route::post('/reenvios', 'ReenvioController@store');
