@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\ReenvioPosicion;
-use Log;
+//use Log;
 use Carbon\Carbon;
 
 class ReenvioController extends Controller
@@ -21,10 +21,9 @@ class ReenvioController extends Controller
 
     public function store(Request $request)
     {
-        Log::debug("json: ".json_encode($request->all()));
-        $report = $request->all();
+        //Log::debug("json: ".json_encode($request->all()));
         //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
-        $caessatString = $this->mkCaessatString2($report);
+        $caessatString = $this->mkCaessatString($request->all());
         ReenvioPosicion::create([
             'movil_id' => $request->input('movil_id'),
             'reenvio_host_id' => 5,
@@ -35,11 +34,7 @@ class ReenvioController extends Controller
     }
 
     private function mkCaessatString(array $fields) {
-        return implode("#", $fields);
-    }
-
-    private function mkCaessatString2(array $fields) {
-        //PC151210104844HRA450-34.70557-058.49464018360101+00+00+00
+        //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
         $cadena = 
             "PC".
             Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
@@ -55,7 +50,7 @@ class ReenvioController extends Controller
             sprintf("%+03d", $fields['temperatura3']).
             "|"
             ;
-        Log::debug($cadena);
+        //Log::debug($cadena);
         return $cadena;
     }
 }
