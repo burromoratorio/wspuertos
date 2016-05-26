@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\ReenvioPosicion;
-//use Log;
+use Log;
 use Carbon\Carbon;
+use Redis;
 
 class ReenvioController extends Controller
 {
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         $reenvios = ReenvioPosicion::with('estado_envio')->get();
         return view('reenvios.index')->with([
             'title' => 'Reenvios',
@@ -19,17 +19,18 @@ class ReenvioController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         //Log::debug("json: ".json_encode($request->all()));
         //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
         $caessatString = $this->mkCaessatString($request->all());
-        ReenvioPosicion::create([
+        $reenvioPosicion = ReenvioPosicion::create([
             'movil_id' => $request->input('movil_id'),
-            'reenvio_host_id' => 5,
+            'reenvio_host_id' => 1,
             'estado_envio_id' => 1,
             'cadena' => $caessatString,
         ]);
+        $key = $request->input('movil_id').":".$request->input('hora');
+        $this->publish($reenvioPosicion->id, $caessatString);
         return "OK\n";
     }
 
@@ -38,7 +39,7 @@ class ReenvioController extends Controller
         $cadena = 
             "PC".
             Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
-            $fields['patente'].
+            $fields['patente']. // TRUNCAR ESTO
             sprintf("%+02.5f", $fields['latitud']).
             sprintf("%+03.5f", $fields['longitud']).
             sprintf("%03d", $fields['velocidad']).
@@ -50,7 +51,25 @@ class ReenvioController extends Controller
             sprintf("%+03d", $fields['temperatura3']).
             "|"
             ;
-        //Log::debug($cadena);
         return $cadena;
+    }
+
+    public function update(Request $request, $id) {
+        $reenvio = ReenvioPosicion::findOrFail($id);
+        $estado = $request->input('estado');
+        Log::debug("Estado recibido: ".$estado);
+        if ($estado == 1) {
+            $this->publish($reenvio->id, $reenvio->cadena);
+        }
+        $reenvio->estado_envio_id = $estado;
+        $reenvio->save();
+        return "Update OK\n";
+    }
+
+    protected function publish($id, $report) {
+        Redis::publish('caessat', json_encode([
+            'id' => $id,
+            'msg' => $report,
+        ]));
     }
 }

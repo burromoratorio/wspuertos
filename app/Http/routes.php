@@ -17,3 +17,4 @@ Route::get('/', function () {
 
 Route::get('/reenvios', 'ReenvioController@index');
 Route::post('/reenvios', 'ReenvioController@store');
+Route::patch('/reenvios/{id}', 'ReenvioController@update');
