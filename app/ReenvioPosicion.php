@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReenvioPosicion extends Model
 {
-    protected $table = 'REENVIOS_POSICIONES';
+    protected $table = 'reenvios_posiciones';
     protected $fillable = ['movil_id', 'reenvio_host_id', 'estado_envio_id', 'cadena'];
 
     public function reenvio_host(){

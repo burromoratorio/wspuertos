@@ -12,7 +12,7 @@ use Redis;
 class ReenvioController extends Controller
 {
     public function index(Request $request) {
-        $reenvios = ReenvioPosicion::with('estado_envio')->get();
+        $reenvios = ReenvioPosicion::with('estado_envio')->orderBy('id', 'desc')->take(30)->get();
         return view('reenvios.index')->with([
             'title' => 'Reenvios',
             'registers' => $reenvios,
@@ -30,7 +30,7 @@ class ReenvioController extends Controller
             'cadena' => $caessatString,
         ]);
         $key = $request->input('movil_id').":".$request->input('hora');
-        $this->publish($reenvioPosicion->id, $caessatString);
+        $this->publishToRedis($reenvioPosicion->id, "192.168.1.78", 12345, $caessatString);
         return "OK\n";
     }
 
@@ -39,18 +39,17 @@ class ReenvioController extends Controller
         $cadena = 
             "PC".
             Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
-            $fields['patente']. // TRUNCAR ESTO
+            substr($fields['patente'], 0, 6).
             sprintf("%+02.5f", $fields['latitud']).
             sprintf("%+03.5f", $fields['longitud']).
             sprintf("%03d", $fields['velocidad']).
             sprintf("%03d", $fields['sentido']).
             $fields['posGpsValida'].
             sprintf("%02d", $fields['evento']).
-            sprintf("%+03d", $fields['temperatura1']).
-            sprintf("%+03d", $fields['temperatura2']).
-            sprintf("%+03d", $fields['temperatura3']).
-            "|"
-            ;
+            sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']).
+            sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']).
+            sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']).
+            "|";
         return $cadena;
     }
 
@@ -59,17 +58,14 @@ class ReenvioController extends Controller
         $estado = $request->input('estado');
         Log::debug("Estado recibido: ".$estado);
         if ($estado == 1) {
-            $this->publish($reenvio->id, $reenvio->cadena);
+            $this->publishToRedis($reenvio->id, "192.168.1.78", 12345, $reenvio->cadena);
         }
         $reenvio->estado_envio_id = $estado;
         $reenvio->save();
-        return "Update OK\n";
+        return "Update OK";
     }
 
-    protected function publish($id, $report) {
-        Redis::publish('caessat', json_encode([
-            'id' => $id,
-            'msg' => $report,
-        ]));
+    protected function publishToRedis($id, $host, $port, $msg) {
+        Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg')));
     }
 }

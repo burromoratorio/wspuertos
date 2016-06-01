@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EstadoEnvio extends Model
 {
-    protected $table = 'ESTADOS_ENVIOS';
+    protected $table = 'estados_envios';
     public $timestamps = false;
 }

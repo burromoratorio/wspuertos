@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReenvioHost extends Model
 {
-    protected $table = 'REENVIOS_HOSTS';
+    protected $table = 'reenvios_hosts';
     public $timestamps = false;
 
     protected $guarded = ['id'];    
