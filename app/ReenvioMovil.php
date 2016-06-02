@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReenvioMovil extends Model
 {
-    protected $table = 'REENVIOS_MOVILES';
+    protected $table = 'reenvios_moviles';
 
     protected $guarded = ['id'];
 

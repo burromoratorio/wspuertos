@@ -18,4 +18,7 @@ class Movil extends Model
         return $this->belongsTo('App\Cliente');
     }
 
+    public function reenvio_movil() {
+        return $this->hasOne('App\ReenvioMovil');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\ReenvioPosicion;
+use App\Movil;
 use Log;
 use Carbon\Carbon;
 use Redis;
@@ -20,17 +21,16 @@ class ReenvioController extends Controller
     }
 
     public function store(Request $request) {
-        //Log::debug("json: ".json_encode($request->all()));
         //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
+        $reenvioHost = Movil::findOrFail($request->input('movil_id'))->reenvio_movil->reenvio_host;
         $caessatString = $this->mkCaessatString($request->all());
         $reenvioPosicion = ReenvioPosicion::create([
             'movil_id' => $request->input('movil_id'),
-            'reenvio_host_id' => 1,
+            'reenvio_host_id' => $reenvioHost->id,
             'estado_envio_id' => 1,
             'cadena' => $caessatString,
         ]);
-        $key = $request->input('movil_id').":".$request->input('hora');
-        $this->publishToRedis($reenvioPosicion->id, "192.168.1.78", 12345, $caessatString);
+        $this->publishToRedis($reenvioPosicion->id, $reenvioHost->destino, $reenvioHost->puerto, $caessatString);
         return "OK\n";
     }
 
@@ -54,14 +54,15 @@ class ReenvioController extends Controller
     }
 
     public function update(Request $request, $id) {
-        $reenvio = ReenvioPosicion::findOrFail($id);
+        $reenvioPosicion = ReenvioPosicion::findOrFail($id);
         $estado = $request->input('estado');
         Log::debug("Estado recibido: ".$estado);
         if ($estado == 1) {
-            $this->publishToRedis($reenvio->id, "192.168.1.78", 12345, $reenvio->cadena);
+            $reenvioHost = $reenvioPosicion->reenvio_host;
+            $this->publishToRedis($reenvioPosicion->id, $reenvioHost->destino, $reenvioHost->puerto, $reenvioPosicion->cadena);
         }
-        $reenvio->estado_envio_id = $estado;
-        $reenvio->save();
+        $reenvioPosicion->estado_envio_id = $estado;
+        $reenvioPosicion->save();
         return "Update OK";
     }
 
