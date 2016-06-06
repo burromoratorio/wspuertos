@@ -55,7 +55,7 @@ class ReenvioController extends Controller
 
     public function update(Request $request, $id) {
         $reenvioPosicion = ReenvioPosicion::findOrFail($id);
-        $estado = $request->input('estado');
+        $estado = $request->input('estado_envio_id');
         Log::debug("Estado recibido: ".$estado);
         if ($estado == 1) {
             $reenvioHost = $reenvioPosicion->reenvio_host;
