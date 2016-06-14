@@ -77,7 +77,7 @@ return [
             'prefix' => '',
             'schema' => 'public',
         ],
-        'sqlsrv' => [
+        'moviles' => [
             'driver'   => 'sqlsrv',
             'host'     => env('DB_HOST', 'localhost'),
             'database' => env('DB_DATABASE', 'forge'),
