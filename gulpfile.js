@@ -11,6 +11,5 @@ elixir(function(mix) {
     ]);
     mix.copy([
         'node_modules/bootstrap-sass/assets/fonts/',
-        'node_modules/font-awesome/fonts/',
     ], 'public/fonts/');
 });

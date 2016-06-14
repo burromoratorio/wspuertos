@@ -4,13 +4,10 @@
     "prod": "gulp --production",
     "dev": "gulp watch"
   },
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "laravel-elixir": "^5.0.0"
-  },
   "dependencies": {
+    "gulp": "^3.9.1",
+    "laravel-elixir": "^5.0.0",
     "bootstrap-sass": "^3.3.0",
-    "font-awesome": "^4.6.3",
     "jquery": "^2.2.2"
   }
 }
