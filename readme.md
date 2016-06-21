@@ -1,7 +1,7 @@
 # Ws Puertos
 
 - [Introducción](#introduccion)
-- [Requerimientos](#requerimientos)
+- [Requisitos](#requisitos)
 - [Instalación](#instalacion)
 
 
@@ -10,8 +10,8 @@
 
 Este es el webservice que utilian los puertos para realizar distintas tareas como la de el [reenvío de reportes CAESSAT][reenvios-caessat] a distintas plataformas.
 
-<a name="requerimientos"></a>
-## Requerimientos
+<a name="requisitos"></a>
+## Requisitos
 
 - git
 - composer
