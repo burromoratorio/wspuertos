@@ -10,7 +10,7 @@
     cd {{ "$project" }}
     chmod -R ugo+w storage bootstrap/cache
     ln -s .env.produccion .env
-    composer install
+    composer install --production
     npm install --production
     node_modules/gulp/bin/gulp.js --production
     # php artisan route:cache # no soporta closures

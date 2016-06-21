@@ -1,6 +1,7 @@
 # Ws Puertos
 
 - [Introducción](#introduccion)
+- [Requerimientos](#requerimientos)
 - [Instalación](#instalacion)
 
 
@@ -8,6 +9,13 @@
 ## Introducción
 
 Este es el webservice que utilian los puertos para realizar distintas tareas como la de el [reenvío de reportes CAESSAT][reenvios-caessat] a distintas plataformas.
+
+<a name="requerimientos"></a>
+## Requerimientos
+
+- git
+- composer
+- npm
 
 <a name="instalacion"></a>
 ## Instalación
