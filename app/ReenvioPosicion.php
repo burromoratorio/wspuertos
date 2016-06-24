@@ -8,6 +8,7 @@ class ReenvioPosicion extends Model
 {
     protected $table = 'reenvios_posiciones';
     protected $fillable = ['movil_id', 'reenvio_host_id', 'estado_envio_id', 'cadena'];
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     public function reenvio_host(){
         return $this->belongsTo('App\ReenvioHost');

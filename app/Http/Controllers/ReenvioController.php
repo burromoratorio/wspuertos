@@ -13,11 +13,13 @@ use Redis;
 class ReenvioController extends Controller
 {
     public function index(Request $request) {
-        $reenvios = ReenvioPosicion::with('estado_envio')->orderBy('id', 'desc')->take(30)->get();
-        return view('reenvios.index')->with([
-            'title' => 'Reenvios',
-            'registers' => $reenvios,
-        ]);
+        if (!request()->wantsJson()) {
+            return view('reenvios.index')->with([
+                'title' => 'Reenvios',
+            ]);
+        } else {
+            return ReenvioPosicion::with('estado_envio')->orderBy('id', 'desc')->take(30)->get();
+        }
     }
 
     public function store(Request $request) {

@@ -7,3 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/all.css">
+    <style type="text/css">
+        [ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate) {
+            display:none !important;
+        }
+    </style>

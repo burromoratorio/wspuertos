@@ -1,10 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-<main id="main">
+<main id="main" ng-controller="ReenviosController as reenvios">
     <h1 class="sr-only">{{ $title }}</h1>
-    @if (count($registers) > 0)
-    <table class="table table-condensed">
+    <table class="table table-condensed" ng-show="reenvios.list.length" ng-cloak>
         <thead>
             <tr>
                 <th>#</th>
@@ -14,18 +13,16 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($registers as $row)
-                <tr>
-                    <td>{{ $row->id }}</td>
-                    <td>{{ $row->movil_id }}</td>
-                    <td>{{ $row->cadena }}</td>
-                    <td>{{ $row->estado_envio->estado }}</td>
-                </tr>
-            @endforeach
+            <tr ng-repeat="reenvio in reenvios.list">
+                <td>@{{ reenvio.id }}</td>
+                <td>@{{ reenvio.movil_id }}</td>
+                <td>@{{ reenvio.cadena }}</td>
+                <td>@{{ reenvio.estado_envio_id }}</td>
+            </tr>
         </tbody>
     </table>
-    @else
+    <div ng-hide="reenvios.list.length">
         No se realizaron reenvios
-    @endif
+    </div>
 </main>
 @stop

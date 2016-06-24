@@ -57,6 +57,21 @@
       "from": "amdefine@>=0.0.4",
       "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
     },
+    "angular": {
+      "version": "1.5.7",
+      "from": "angular@latest",
+      "resolved": "https://registry.npmjs.org/angular/-/angular-1.5.7.tgz"
+    },
+    "angular-i18n": {
+      "version": "1.5.7",
+      "from": "angular-i18n@latest",
+      "resolved": "https://registry.npmjs.org/angular-i18n/-/angular-i18n-1.5.7.tgz"
+    },
+    "angular-ui-bootstrap": {
+      "version": "1.3.3",
+      "from": "angular-ui-bootstrap@latest",
+      "resolved": "https://registry.npmjs.org/angular-ui-bootstrap/-/angular-ui-bootstrap-1.3.3.tgz"
+    },
     "ansi": {
       "version": "0.3.1",
       "from": "ansi@>=0.3.1 <0.4.0",

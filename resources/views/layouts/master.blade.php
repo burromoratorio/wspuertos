@@ -3,7 +3,7 @@
 <head>
 @include('layouts.head')
 </head>
-<body>
+<body ng-app="api">
     <noscript>
         <div class="warning-message">Este sitio requiere javascript para su correcto funcionamiento</div>
     </noscript>
