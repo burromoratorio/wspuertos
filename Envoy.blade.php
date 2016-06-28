@@ -33,8 +33,8 @@
     composer install
 
     echo "--- Se compilan assets, se actualiza aplicación, se crean caches ---"
-    node_modules/gulp/bin/gulp.js --production
     git merge origin master
+    node_modules/gulp/bin/gulp.js --production
     # php artisan route:cache # no soporta closures
     php artisan config:cache
 
