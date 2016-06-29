@@ -10,9 +10,10 @@
     cd {{ "$project" }}
     chmod -R ugo+w storage bootstrap/cache
     ln -s .env.produccion .env
-    composer install --production
+    composer install --no-dev
     npm install --production
     node_modules/gulp/bin/gulp.js --production
+    php artisan optimize --force
     # php artisan route:cache # no soporta closures
     php artisan config:cache
 @endtask
@@ -30,11 +31,12 @@
 
     echo "--- Se instalan/actualizan dependencias (composer) ---"
     git checkout FETCH_HEAD -- composer.json composer.lock
-    composer install
+    composer install --no-dev
 
     echo "--- Se compilan assets, se actualiza aplicación, se crean caches ---"
     git merge origin master
     node_modules/gulp/bin/gulp.js --production
+    php artisan optimize --force
     # php artisan route:cache # no soporta closures
     php artisan config:cache
 
