@@ -40,6 +40,9 @@
     # php artisan route:cache # no soporta closures
     php artisan config:cache
 
+    # por si algun template blade no existe mas
+    php artisan view:clear
+
     php artisan up
 
 @endtask
