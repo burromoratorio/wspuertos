@@ -7,18 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class ReenvioPosicion extends Model
 {
     protected $table = 'reenvios_posiciones';
-    protected $fillable = ['movil_id', 'reenvio_host_id', 'estado_envio_id', 'cadena'];
+    protected $fillable = ['movil_id', 'cadena'];
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    public function reenvio_host(){
-        return $this->belongsTo('App\ReenvioHost');
-    }
-
-    public function movil(){
+    public function movil() {
         return $this->belongsTo('App\Movil');
     }
-
-    public function estado_envio(){
-        return $this->belongsTo('App\EstadoEnvio');
+    public function reenvios_moviles() {
+        return $this->hasMany('App\ReenvioMovil', 'movil_id', 'movil_id');
     }
 }

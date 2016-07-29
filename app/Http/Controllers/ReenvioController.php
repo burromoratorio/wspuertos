@@ -17,22 +17,32 @@ class ReenvioController extends Controller
             return view('reenvios.index')->with([
                 'title' => 'Reenvios',
             ]);
-        } else {
-            return ReenvioPosicion::with('estado_envio')->orderBy('id', 'desc')->take(30)->get();
         }
+        return ReenvioPosicion::with('estado_envio')
+            ->orderBy('id', 'desc')
+            ->take(30)
+            ->get();
     }
 
     public function store(Request $request) {
         //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
-        $reenvioHost = Movil::findOrFail($request->input('movil_id'))->reenvio_movil->reenvio_host;
-        $caessatString = $this->mkCaessatString($request->all());
         $reenvioPosicion = ReenvioPosicion::create([
             'movil_id' => $request->input('movil_id'),
-            'reenvio_host_id' => $reenvioHost->id,
-            'estado_envio_id' => 1,
-            'cadena' => $caessatString,
+            'cadena' => $this->mkCaessatString($request->all()),
         ]);
-        $this->publishToRedis($reenvioPosicion->id, $reenvioHost->destino, $reenvioHost->puerto, $caessatString);
+        $reenvioPosicion
+            ->reenvios_moviles
+            ->each(function ($reenvio_movil) use ($this, $reenvioPosicion) {
+                $reenvioPosicionHost = ReenvioPosicionHost::create([
+                    'reenvio_posicion_id' => $reenvioPosicion->id,
+                    'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
+                    'estado_envio_id' => 1,
+                ]);
+                $reenvioHost = $reenvioPosicionHost->reenvio_host;
+                $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
+                    $reenvioHost->puerto, $reenvioPosicion->cadena);
+
+            });
         return "OK\n";
     }
 
