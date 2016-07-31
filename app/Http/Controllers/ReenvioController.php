@@ -66,15 +66,16 @@ class ReenvioController extends Controller
     }
 
     public function update(Request $request, $id) {
-        $reenvioPosicion = ReenvioPosicion::findOrFail($id);
+        $reenvioPosicionHost = ReenvioPosicionHost::findOrFail($id);
         $estado = $request->input('estado_envio_id');
         Log::debug("Estado recibido: ".$estado);
         if ($estado == 1) {
-            $reenvioHost = $reenvioPosicion->reenvio_host;
-            $this->publishToRedis($reenvioPosicion->id, $reenvioHost->destino, $reenvioHost->puerto, $reenvioPosicion->cadena);
+            $reenvioHost = $reenvioPosicionHost->reenvio_host;
+            $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
+                $reenvioHost->puerto, $reenvioPosicion->cadena);
         }
-        $reenvioPosicion->estado_envio_id = $estado;
-        $reenvioPosicion->save();
+        $reenvioPosicionHost->estado_envio_id = $estado;
+        $reenvioPosicionHost->save();
         return "Update OK";
     }
 
