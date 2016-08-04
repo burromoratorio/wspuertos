@@ -12,6 +12,10 @@ use Redis;
 
 class ReenvioController extends Controller
 {
+    const ESTADO_PENDIENTE = 1;
+    const ESTADO_ENVIADO = 2;
+    const ESTADO_FALLIDO = 3;
+
     public function index(Request $request) {
         if (!request()->wantsJson()) {
             return view('reenvios.index')->with([
@@ -36,7 +40,7 @@ class ReenvioController extends Controller
                 $reenvioPosicionHost = ReenvioPosicionHost::create([
                     'reenvio_posicion_id' => $reenvioPosicion->id,
                     'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
-                    'estado_envio_id' => 1,
+                    'estado_envio_id' => static::ESTADO_PENDIENTE,
                 ]);
                 $reenvioHost = $reenvioPosicionHost->reenvio_host;
                 $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
@@ -48,7 +52,7 @@ class ReenvioController extends Controller
 
     private function mkCaessatString(array $fields) {
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
-        $cadena = 
+        $cadena =
             "PC".
             Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
             substr($fields['patente'], 0, 6).
@@ -69,7 +73,7 @@ class ReenvioController extends Controller
         $reenvioPosicionHost = ReenvioPosicionHost::findOrFail($id);
         $estado = $request->input('estado_envio_id');
         Log::debug("Estado recibido: ".$estado);
-        if ($estado == 1) {
+        if ($estado == static::ESTADO_PENDIENTE) {
             $reenvioHost = $reenvioPosicionHost->reenvio_host;
             $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
                 $reenvioHost->puerto, $reenvioPosicion->cadena);
