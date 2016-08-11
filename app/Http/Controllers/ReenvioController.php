@@ -24,8 +24,7 @@ class ReenvioController extends Controller
         }
         return ReenvioPosicion::with('estado_envio')
             ->orderBy('id', 'desc')
-            ->take(30)
-            ->get();
+            ->take(30);
     }
 
     public function store(Request $request) {
@@ -36,7 +35,7 @@ class ReenvioController extends Controller
         ]);
         $reenvioPosicion
             ->reenvios_moviles
-            ->each(function ($reenvio_movil) use ($this, $reenvioPosicion) {
+            ->each(function ($reenvio_movil) use ($reenvioPosicion) {
                 $reenvioPosicionHost = ReenvioPosicionHost::create([
                     'reenvio_posicion_id' => $reenvioPosicion->id,
                     'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
