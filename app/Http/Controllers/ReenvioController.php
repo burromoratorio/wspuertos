@@ -36,6 +36,7 @@ class ReenvioController extends Controller
         ]);
         $reenvioPosicion
             ->reenvios_moviles
+            ->filter(function($value) { return $value->activo == '1' ;})
             ->each(function ($reenvio_movil) use ($reenvioPosicion) {
                 $reenvioPosicionHost = ReenvioPosicionHost::create([
                     'reenvio_posicion_id' => $reenvioPosicion->id,
