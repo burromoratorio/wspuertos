@@ -57,8 +57,8 @@ class ReenvioController extends Controller
             "PC".
             Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
             substr($fields['patente'], 0, 6).
-            sprintf("%+02.5f", $fields['latitud']).
-            sprintf("%+03.5f", $fields['longitud']).
+            sprintf("%+09.5f", $fields['latitud']).
+            sprintf("%+010.5f", $fields['longitud']).
             sprintf("%03d", $fields['velocidad']).
             sprintf("%03d", $fields['sentido']).
             $fields['posGpsValida'].
