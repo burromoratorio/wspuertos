@@ -77,7 +77,7 @@ class ReenvioController extends Controller
         if ($estado == static::ESTADO_PENDIENTE) {
             $reenvioHost = $reenvioPosicionHost->reenvio_host;
             $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
-                $reenvioHost->puerto, $reenvioPosicion->cadena);
+                $reenvioHost->puerto, $reenvioPosicionHost->reenvio_posicion->cadena);
         }
         $reenvioPosicionHost->estado_envio_id = $estado;
         $reenvioPosicionHost->save();
