@@ -29,7 +29,9 @@ errors [-yh]
 ```
 Para crear el alias, ejecutar el siguiente comando (sólo una vez) para que quede guardado en el **.bashrc** y que de estea manera esté disponible cada vez que se abra una cosola interactiva de bash:
 
+```bash
 echo 'alias errors="/var/www/wspuertos/util/errors.sh"' >> ~/.bashrc
+```
 
  [reenvios-caessat]: /Reenvios-de-posiciones
  [guia-instalacion]: /Web/Creacion-proyecto-web#instalacion-proyectos
