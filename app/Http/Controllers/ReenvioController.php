@@ -51,21 +51,27 @@ class ReenvioController extends Controller
         return "OK\n";
     }
 
+    private function checkLength($name, $field, $length) {
+        if (strlen($field) != $length)
+            throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
+        return $field;
+    }
+
     private function mkCaessatString(array $fields) {
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
         $cadena =
             "PC".
-            Carbon::createFromTimestamp($fields['hora'])->format('dmyHis').
-            substr($fields['patente'], 0, 6).
-            sprintf("%+09.5f", $fields['latitud']).
-            sprintf("%+010.5f", $fields['longitud']).
-            sprintf("%03d", $fields['velocidad']).
-            sprintf("%03d", $fields['sentido']).
-            $fields['posGpsValida'].
-            sprintf("%02d", $fields['evento']).
-            sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']).
-            sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']).
-            sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']).
+            $this->checkLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).
+            $this->checkLength("patente", substr($fields['patente'], 0, 6), 6).
+            $this->checkLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).
+            $this->checkLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).
+            $this->checkLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).
+            $this->checkLength("sentido", sprintf("%03d", $fields['sentido']), 3).
+            $this->checkLength("posGpsValida", $fields['posGpsValida'], 1).
+            $this->checkLength("evento", sprintf("%02d", $fields['evento']), 2).
+            $this->checkLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).
+            $this->checkLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
+            $this->checkLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
             "|";
         return $cadena;
     }
