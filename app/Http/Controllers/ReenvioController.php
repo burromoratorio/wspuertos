@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
-use App\Movil;
-use Log;
 use Carbon\Carbon;
 use Redis;
 
@@ -44,9 +42,12 @@ class ReenvioController extends Controller
                     'estado_envio_id' => static::ESTADO_PENDIENTE,
                 ]);
                 $reenvioHost = $reenvioPosicionHost->reenvio_host;
-                $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
-                    $reenvioHost->puerto, $reenvioPosicion->cadena);
-
+                $this->publishToRedis(
+                    $reenvioPosicionHost->id,
+                    $reenvioHost->destino,
+                    $reenvioHost->puerto,
+                    $reenvioPosicion->cadena
+                );
             });
         return "OK\n";
     }
@@ -79,11 +80,14 @@ class ReenvioController extends Controller
     public function update(Request $request, $id) {
         $reenvioPosicionHost = ReenvioPosicionHost::findOrFail($id);
         $estado = $request->input('estado_envio_id');
-        Log::debug("Estado recibido: ".$estado);
         if ($estado == static::ESTADO_PENDIENTE) {
             $reenvioHost = $reenvioPosicionHost->reenvio_host;
-            $this->publishToRedis($reenvioPosicionHost->id, $reenvioHost->destino,
-                $reenvioHost->puerto, $reenvioPosicionHost->reenvio_posicion->cadena);
+            $this->publishToRedis(
+                $reenvioPosicionHost->id,
+                $reenvioHost->destino,
+                $reenvioHost->puerto,
+                $reenvioPosicionHost->reenvio_posicion->cadena
+            );
         }
         $reenvioPosicionHost->estado_envio_id = $estado;
         $reenvioPosicionHost->save();
