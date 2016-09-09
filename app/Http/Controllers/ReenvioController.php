@@ -16,14 +16,9 @@ class ReenvioController extends Controller
     const ESTADO_FALLIDO = 3;
 
     public function index(Request $request) {
-        if (!request()->wantsJson()) {
-            return view('reenvios.index')->with([
-                'title' => 'Reenvios',
-            ]);
-        }
         return ReenvioPosicion::with('estado_envio')
             ->orderBy('id', 'desc')
-            ->take(30);
+            ->take(30)->get();
     }
 
     public function store(Request $request) {

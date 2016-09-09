@@ -1,4 +1,5 @@
 <?php
 
-Route::post('/reenvios', 'ReenvioController@store');
-Route::patch('/reenvios/{id}', 'ReenvioController@update');
+$app->get('/reenvios', 'ReenvioController@index');
+$app->post('/reenvios', 'ReenvioController@store');
+$app->patch('/reenvios/{id}', 'ReenvioController@update');
