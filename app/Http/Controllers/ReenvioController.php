@@ -16,9 +16,7 @@ class ReenvioController extends Controller
     const ESTADO_FALLIDO = 3;
 
     public function index(Request $request) {
-        return ReenvioPosicion::with('estado_envio')
-            ->orderBy('id', 'desc')
-            ->take(30)->get();
+        return ReenvioPosicion::take(30)->get();
     }
 
     public function store(Request $request) {
