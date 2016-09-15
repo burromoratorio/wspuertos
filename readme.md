@@ -17,6 +17,7 @@ Este es el webservice que utilian los puertos para realizar distintas tareas com
 - git
 - composer
 - npm
+- [redis][redis]
 
 <a name="instalacion"></a>
 ## Instalación
@@ -57,3 +58,4 @@ Dado que ambos son procesos que están continuamente procesando datos, analizar 
 
  [reenvios-caessat]: /Reenvios-de-posiciones
  [guia-instalacion]: /Web/Creacion-proyecto-web#instalacion-proyectos
+ [redis]: /Software-de-terceros/Redis#instalacion
