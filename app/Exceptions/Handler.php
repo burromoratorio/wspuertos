@@ -45,6 +45,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return response($e->getTraceAsString());
+        return response($e);
     }
 }
