@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Evento;
+use App\AvisoCliente;
 
 class EventoController extends Controller
 {
@@ -14,6 +15,12 @@ class EventoController extends Controller
     }
 
     public function store(Request $request) {
+        $this->validate($request, [
+            'evento_tipo_id' => 'required|numeric',
+            'movil_id' => 'required|numeric',
+            'waypoint_id' => 'required|numeric',
+            'cliente_id' => 'required|numeric',
+        ]);
         $evento = Evento::create([
             'evento_tipo_id' => $request->input('evento_tipo_id'),
             'movil_id' => $request->input('movil_id'),
