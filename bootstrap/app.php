@@ -83,7 +83,9 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
-class_alias('Illuminate\Support\Facades\Redis', 'Redis');
+if (!class_exists('Redis')) {
+    class_alias('Illuminate\Support\Facades\Redis', 'Redis');
+}
 
 /*
 |--------------------------------------------------------------------------

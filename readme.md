@@ -4,6 +4,7 @@
 - [Requisitos](#requisitos)
 - [Instalación](#instalacion)
 - [Optimizaciones](#optimizaciones)
+- [Testing](#testing)
 
 
 <a name="introduccion"></a>
@@ -55,6 +56,17 @@ Nginx tiene un modo muy diferente a Apache para procesar las request, que hace q
 #### Separar proceso node y API en distintos servers
 
 Dado que ambos son procesos que están continuamente procesando datos, analizar de separarlos si llegan a consumir muchos recursos.
+
+<a name="testing"></a>
+## Testing
+
+> Antes de realizar los tests, limpiar la caché: `config:clear`
+
+Para ejecutar los tests:
+
+```bash
+phpunit
+```
 
  [reenvios-caessat]: /Reenvios-de-posiciones
  [guia-instalacion]: /Web/Creacion-proyecto-web#instalacion-proyectos
