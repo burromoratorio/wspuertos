@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Evento;
 use App\AvisoCliente;
+use App\AvisoMovil;
+use Redis;
 
 class EventoController extends Controller
 {
@@ -27,6 +29,20 @@ class EventoController extends Controller
             'eventable_id' => $request->input('waypoint_id'),
             'eventable_type' => 'App\Waypoint',
         ]);
-        return "OK\n";
+        $this->checkMail($request->only('cliente_id', 'movil_id'));
+        return "OK";
+    }
+
+    protected function checkMail($input) {
+        if (AvisoCliente::find($input['cliente_id'])) {
+            if (AvisoMovil::find($input['movil_id']) || !AvisoMovil::count()) {
+                $this->sendMail($movil, $cliente, $evento);
+            }
+        }
+    }
+
+    protected function sendMail($movil, $cliente, $evento) {
+        // TODO: terminar de implementar
+        Redis::publish('mails', json_encode(compact('id', 'msg')));
     }
 }
