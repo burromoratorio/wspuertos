@@ -8,3 +8,4 @@ Homestead.json
 /public/fonts/
 /public/js/
 resources/assets/css/
+database/factories/ModelFactory.php
