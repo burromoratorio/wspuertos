@@ -83,7 +83,9 @@ return [
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
+            'charset'  => env('DB_CHARSET', 'utf8'),
             'prefix'   => env('DB_PREFIX', ''),
+            'timezone' => env('DB_TIMEZONE', '+00:00'),
         ],
 
     ],
@@ -114,13 +116,13 @@ return [
 
     'redis' => [
 
-        'cluster' => false,
+        'cluster' => env('REDIS_CLUSTER', false),
 
         'default' => [
-            'host' => env('REDIS_HOST', 'localhost'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
+            'port'     => env('REDIS_PORT', 6379),
+            'database' => env('REDIS_DATABASE', 0),
             'password' => env('REDIS_PASSWORD', null),
-            'port' => env('REDIS_PORT', 6379),
-            'database' => 0,
         ],
 
     ],
