@@ -9,7 +9,7 @@
     cd /var/www/
     git clone git@gitserver.siacseguridad.com:/var/git/sistemas/{{ "$project" }}.git
     cd {{ "$project" }}
-    chmod -R ugo+w storage bootstrap/cache
+    chmod -R ugo+w storage
     ln -s .env.produccion .env
     composer install --no-dev
 
@@ -18,9 +18,8 @@
 @task('deploy', ['on' => 'server'])
 
     cd /var/www/{{ "$project" }}
-    git fetch origin master
-    echo "--- Se instalan/actualizan dependencias (composer) ---"
-    git merge origin master
+    chmod -R ugo+w storage
+    git pull origin master
     composer install --no-dev
 
 @endtask

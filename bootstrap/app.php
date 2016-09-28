@@ -27,6 +27,8 @@ $app->withFacades();
 
 $app->withEloquent();
 
+$app->configure('app');
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -78,15 +80,11 @@ $app->middleware([
 |
 */
 
-$app->register(App\Providers\AppServiceProvider::class);
+//$app->register(App\Providers\AppServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Barryvdh\Cors\LumenServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
-
-if (!class_exists('Redis')) {
-    class_alias('Illuminate\Support\Facades\Redis', 'Redis');
-}
 
 /*
 |--------------------------------------------------------------------------

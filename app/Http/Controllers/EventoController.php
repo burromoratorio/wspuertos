@@ -8,7 +8,7 @@ use App\Http\Requests;
 use App\Evento;
 use App\AvisoCliente;
 use App\AvisoMovil;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class EventoController extends Controller
 {
