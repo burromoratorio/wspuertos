@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Evento;
 use App\AvisoCliente;
+use Illuminate\Support\Facades\Redis;
 
 class EventoController extends Controller
 {

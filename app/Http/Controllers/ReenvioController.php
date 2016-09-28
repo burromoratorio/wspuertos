@@ -7,7 +7,7 @@ use App\Http\Requests;
 use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
 use Carbon\Carbon;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class ReenvioController extends Controller
 {
