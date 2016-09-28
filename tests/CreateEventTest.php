@@ -18,8 +18,10 @@ class CreateEventTest extends TestCase
             'movil_id' => $movil->movil_id,
             'waypoint_id' => 1,
             'cliente_id' => 1,
+            'dominio' => 'ABC123',
+            'timestamp' => 123456,
         ]);
-        $this->assertResponseOk();
+        $this->assertEquals($this->response->getContent(), "OK");
     }
 
     public function testOutWaypoint()
@@ -30,8 +32,10 @@ class CreateEventTest extends TestCase
             'movil_id' => $movil->movil_id,
             'waypoint_id' => 1,
             'cliente_id' => $movil->cliente_id,
+            'dominio' => 'ABC123',
+            'timestamp' => 123456,
         ]);
-        $this->assertResponseOk();
+        $this->assertEquals($this->response->getContent(), "OK");
     }
 
     private function getMovil()

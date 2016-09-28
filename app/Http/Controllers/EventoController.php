@@ -59,7 +59,7 @@ class EventoController extends Controller
                 });
             $waypoint = Waypoint::find($waypoint_id);
             $info_mail = $this->makeMailWaypoint($dominio, $evento_tipo_id, $timestamp, $waypoint);
-            $this->sendMail($id, $info_mail['subject'], $info_mail['body'], $addresses);
+            $this->sendMail($info_mail['subject'], $info_mail['body'], implode(",", $addresses));
         }
         return "OK";
     }
@@ -76,18 +76,18 @@ class EventoController extends Controller
             $subject = "SIAC - ".$dominio." ingresa al waypoint: " + $waypoint->nombre;
             $body = "Hora de egreso: ".Carbon::createFromTimestamp($timestamp)->format('%d/%m/%y %X"');
         } else if ($evento_tipo_id == static::AVISO_SALIDA_WAYPOINT) {
-            $subject = "SIAC - ".$dominio.." sale del waypoint: " + $waypoint->nombre;
+            $subject = "SIAC - $dominio sale del waypoint: ".$waypoint->nombre;
             $body = "Hora de ingreso: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('%d/%m/%y %X"');
         }
         return compact('subject', 'body');
     }
 
-    protected function sendMail($id, $subject, $body, $addresses) {
-        Aviso::create([
+    protected function sendMail($subject, $body, $addresses) {
+        $id = Aviso::create([
             'aviso_cliente_id' => $this->aviso_cliente->id,
             'estado_envio_id' => static::ESTADO_PENDIENTE,
             'aviso' => "$subject;$body;$addresses",
-        ]);
-        //Redis::publish('mails', json_encode(compact('id', 'subject', 'body', 'addresses')));
+        ])->id;
+        Redis::publish('mails', json_encode(compact('id', 'subject', 'body', 'addresses')));
     }
 }
