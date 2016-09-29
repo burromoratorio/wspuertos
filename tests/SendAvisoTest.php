@@ -15,11 +15,11 @@ class SendAvisoTest extends TestCase
         $movil = $this->getMovil();
         $waypoint = $this->getWaypoint();
 
-        $aviso_cliente = AvisoCliente::create([
+        $aviso_cliente = AvisoCliente::firstOrCreate([
             'aviso_tipo_id' => 1, // entrada waypoint
             'cliente_id' => $movil->cliente_id,
         ]);
-        $aviso_configuracion = AvisoConfiguracion::create([
+        $aviso_configuracion = AvisoConfiguracion::firstOrCreate([
             'aviso_cliente_id' => $aviso_cliente->id,
             'aviso_configuracion_tipo' => 1, // "waypoint id"
             'valor' => $waypoint->waypoint_id, // <waypoint_id>
@@ -35,6 +35,6 @@ class SendAvisoTest extends TestCase
             'dominio' => 'ABC123',
             'timestamp' => 123456,
         ]);
-        $this->assertTrue(true);
+        $this->assertEquals($this->response->getContent(), "OK");
     }
 }
