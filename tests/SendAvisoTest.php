@@ -8,7 +8,7 @@ use App\AvisoConfiguracion;
 
 class SendAvisoTest extends TestCase
 {
-    //use DatabaseTransactions;
+    use DatabaseTransactions;
 
     public function testSendAviso()
     {

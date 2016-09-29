@@ -5,7 +5,7 @@ use App\Movil;
 
 class CreateEventTest extends TestCase
 {
-    //use DatabaseTransactions;
+    use DatabaseTransactions;
 
     public function testInWaypoint()
     {
