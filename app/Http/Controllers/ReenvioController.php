@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
+
 use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
 use Carbon\Carbon;

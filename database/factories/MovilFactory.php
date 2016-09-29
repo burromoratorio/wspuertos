@@ -13,3 +13,9 @@ $factory->define(App\Movil::class, function (Faker\Generator $faker) {
         }
     ];
 });
+
+$factory->define(App\Waypoint::class, function (Faker\Generator $faker) {
+    return [
+        'nombre' => $faker->name,
+    ];
+});

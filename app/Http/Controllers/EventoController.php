@@ -4,27 +4,40 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Evento;
-use App\Movil;
-use App\Aviso;
-use App\Waypoint;
-use App\AvisoCliente;
-use App\AvisoMovil;
-use App\AvisoDestinatario;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Redis;
 
 class EventoController extends Controller
 {
+    use AvisosTrait;
+
+    // eventos
+    const EVENTO_ENTRADA_WAYPOINT = 1;
+    const EVENTO_SALIDA_WAYPOINT = 2;
+    // avisos
     const AVISO_ENTRADA_WAYPOINT = 1;
     const AVISO_SALIDA_WAYPOINT = 2;
-
+    // estados
     const ESTADO_PENDIENTE = 1;
     const ESTADO_ENVIADO = 2;
     const ESTADO_FALLIDO = 3;
+    // eventos notificables
+    protected $notifiable_events = [
+        self::EVENTO_ENTRADA_WAYPOINT,
+        self::EVENTO_SALIDA_WAYPOINT,
+    ];
+    // mapa de evento a tipo_aviso
+    protected $eventos_avisos = [
+        self::EVENTO_ENTRADA_WAYPOINT => self::AVISO_ENTRADA_WAYPOINT,
+        self::EVENTO_SALIDA_WAYPOINT => self::AVISO_SALIDA_WAYPOINT,
+    ];
 
-    protected $aviso_cliente;
+    // propiedades del evento
+    protected $evento_tipo_id;
+    protected $cliente_id;
+    protected $movil_id;
+    protected $dominio;
+    protected $timestamp;
+    protected $waypoint_id;
 
     public function index(Request $request) {
         return Evento::take(30)->get();
@@ -39,55 +52,36 @@ class EventoController extends Controller
             'timestamp' => 'required|numeric',
             'waypoint_id' => 'required|numeric',
         ]);
-        $evento_tipo_id = $request->input('evento_tipo_id');
-        $movil_id = $request->input('movil_id');
-        $dominio = $request->input('dominio');
-        $waypoint_id = $request->input('waypoint_id');
-        $evento = Evento::create([
-            'evento_tipo_id' => $evento_tipo_id,
-            'movil_id' => $movil_id,
-            'eventable_id' => $waypoint_id,
-            'eventable_type' => 'App\Waypoint',
+
+        $this->evento_tipo_id = $request->input('evento_tipo_id');
+        $this->cliente_id = $request->input('cliente_id');
+        $this->movil_id = $request->input('movil_id');
+        $this->dominio = $request->input('dominio');
+        $this->timestamp = $request->input('timestamp');
+        $this->waypoint_id = $request->input('waypoint_id');
+
+        Evento::create([
+            'evento_tipo_id' => $this->evento_tipo_id,
+            'movil_id' => $this->movil_id,
+            'eventable_id' => $this->waypoint_id,
+            'eventable_type' => 'App\Waypoint', // mandarlo desde el puerto
         ]);
-        $send = $this->checkNotificacion($request->only('cliente_id', 'movil_id'));
-        if ($send) {
-            $addresses = AvisoDestinatario
-                ::where('aviso_cliente_id', $this->aviso_cliente->id)
-                ->with('destinatario')
-                ->map(function($aviso_destinatario) {
-                    return $aviso_destinatario->destinatario;
-                });
-            $waypoint = Waypoint::find($waypoint_id);
-            $info_mail = $this->makeMailWaypoint($dominio, $evento_tipo_id, $timestamp, $waypoint);
-            $this->sendMail($info_mail['subject'], $info_mail['body'], implode(",", $addresses));
-        }
+        $this->processAviso();
         return "OK";
     }
 
-    protected function checkNotificacion($input) {
-        $this->aviso_cliente = AvisoCliente::find($input['cliente_id']);
-        return $this->aviso_cliente && (
-            !AvisoMovil::count() || AvisoMovil::find($input['movil_id'])
-        );
+    protected function isNotifiable($evento_tipo_id) {
+        return array_key_exists($evento_tipo_id, $this->notifiable_events);
     }
 
-    protected function makeMailWaypoint($dominio, $evento_tipo_id, $timestamp, $waypoint) {
-        if ($evento_tipo_id == static::AVISO_ENTRADA_WAYPOINT) {
-            $subject = "SIAC - ".$dominio." ingresa al waypoint: " + $waypoint->nombre;
-            $body = "Hora de egreso: ".Carbon::createFromTimestamp($timestamp)->format('%d/%m/%y %X"');
-        } else if ($evento_tipo_id == static::AVISO_SALIDA_WAYPOINT) {
-            $subject = "SIAC - $dominio sale del waypoint: ".$waypoint->nombre;
-            $body = "Hora de ingreso: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('%d/%m/%y %X"');
-        }
-        return compact('subject', 'body');
-    }
+    protected function processAviso() {
+        if (!$this->isNotifiable($this->evento_tipo_id)) return;
 
-    protected function sendMail($subject, $body, $addresses) {
-        $id = Aviso::create([
-            'aviso_cliente_id' => $this->aviso_cliente->id,
-            'estado_envio_id' => static::ESTADO_PENDIENTE,
-            'aviso' => "$subject;$body;$addresses",
-        ])->id;
-        Redis::publish('mails', json_encode(compact('id', 'subject', 'body', 'addresses')));
+        $aviso_tipo_id = $this->eventos_avisos[$this->evento_tipo_id];
+        if (!$this->mustNotify($this->movil_id, $this->cliente_id, $aviso_tipo_id)) return;
+        \Log::debug("lo notifica");
+        // esto va a terminar siendo un condicional
+        $info_mail = $this->makeMailWaypoint($this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id);
+        $this->notify($info_mail['subject'], $info_mail['body']);
     }
 }
