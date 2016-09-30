@@ -3,6 +3,7 @@
 use App\Movil;
 use App\Cliente;
 use App\Waypoint;
+use App\Destinatario;
 
 class TestCase extends Laravel\Lumen\Testing\TestCase
 {
@@ -46,6 +47,16 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
             $waypoint = factory(App\Waypoint::class)->create();
         }
         print("\nSe prueba con el waypoint: ".$waypoint->waypoint_id."\n");
+        return $waypoint;
+    }
+
+    protected function getDestinatario()
+    {
+        $destinatario = Destinatario::first();
+        if (!$destinatario) {
+            $destinatario = factory(App\Destinatario::class)->create();
+        }
+        print("\nSe prueba con el destinatario: ".$destinatario->id."\n");
         return $waypoint;
     }
 }

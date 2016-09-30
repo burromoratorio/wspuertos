@@ -75,11 +75,13 @@ class EventoController extends Controller
     }
 
     protected function processAviso() {
-        if (!$this->isNotifiable($this->evento_tipo_id)) return;
+        if (!$this->isNotifiable($this->evento_tipo_id))
+            return;
 
         $aviso_tipo_id = $this->eventos_avisos[$this->evento_tipo_id];
-        if (!$this->mustNotify($this->movil_id, $this->cliente_id, $aviso_tipo_id)) return;
-        \Log::debug("lo notifica");
+        if (!$this->mustNotify($this->movil_id, $this->cliente_id, $aviso_tipo_id, $this->waypoint_id))
+            return;
+
         // esto va a terminar siendo un condicional
         $info_mail = $this->makeMailWaypoint($this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id);
         $this->notify($info_mail['subject'], $info_mail['body']);

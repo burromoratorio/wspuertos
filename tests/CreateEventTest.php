@@ -19,7 +19,7 @@ class CreateEventTest extends TestCase
             'dominio' => 'ABC123',
             'timestamp' => 123456,
         ]);
-        $this->assertEquals($this->response->getContent(), "OK");
+        $this->assertEquals("OK", $this->response->getContent());
     }
 
     public function testOutWaypoint()
@@ -34,6 +34,6 @@ class CreateEventTest extends TestCase
             'dominio' => 'ABC123',
             'timestamp' => 123456,
         ]);
-        $this->assertEquals($this->response->getContent(), "OK");
+        $this->assertEquals("OK", $this->response->getContent());
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Aviso;
 use App\AvisoCliente;
 use App\AvisoMovil;
+use App\AvisoConfiguracion;
 use App\AvisoDestinatario;
 use App\Waypoint;
 use Carbon\Carbon;
@@ -14,7 +15,7 @@ trait AvisosTrait
 {
     protected $aviso_cliente;
 
-    protected function mustNotify($movil_id, $cliente_id, $aviso_tipo_id) {
+    protected function mustNotify($movil_id, $cliente_id, $aviso_tipo_id, $waypoint_id) {
         $this->aviso_cliente = AvisoCliente::where([
             ['cliente_id', $cliente_id],
             ['aviso_tipo_id', $aviso_tipo_id],
@@ -22,8 +23,14 @@ trait AvisosTrait
         return $this->aviso_cliente && (
             !AvisoMovil::where('aviso_cliente_id', $this->aviso_cliente->id)->first() ||
             AvisoMovil::where([
-                ['aviso_cliente_id', $aviso_cliente->id],
+                ['aviso_cliente_id', $this->aviso_cliente->id],
                 ['movil_id', $movil_id],
+            ])->first()
+        ) && (
+            !AvisoConfiguracion::where('aviso_cliente_id', $this->aviso_cliente->id)->first() ||
+            AvisoConfiguracion::where([
+                ['aviso_cliente_id', $this->aviso_cliente->id],
+                ['valor', $waypoint_id],
             ])->first()
         );
     }
@@ -37,15 +44,17 @@ trait AvisosTrait
     }
 
     protected function notify($subject, $body) {
+        $subject = str_replace(";", " ", $subject); // evita que se rompa la cadena a enviar
         $aviso_id = $this->createAviso("$subject;$body");
         $addresses = AvisoDestinatario
             ::where('aviso_cliente_id', $this->aviso_cliente->id)
             ->with('destinatario')
             ->get()
             ->map(function($aviso_destinatario) {
-                return $aviso_destinatario->destinatario;
-            });
-        $this->sendAviso($aviso_id, $subject, $body, implode(",", $addresses->toArray()));
+                return $aviso_destinatario->destinatario->mail;
+            })
+            ->toArray();
+        $this->sendAviso($aviso_id, $subject, $body, implode(",", $addresses));
     }
 
     protected function makeMailWaypoint($dominio, $evento_tipo_id, $timestamp, $waypoint_id) {
@@ -63,6 +72,7 @@ trait AvisosTrait
     }
 
     protected function sendAviso($aviso_id, $subject, $body, $addresses) {
+        if ($addresses == "") throw new \Exception("Falta mail para el aviso: $aviso_id. $subject");
         //Redis::publish('mails', json_encode(compact('aviso_id', 'subject', 'body', 'addresses')));
     }
 }
