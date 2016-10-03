@@ -8,7 +8,7 @@ use App\Evento;
 
 class EventoController extends Controller
 {
-    use AvisosTrait;
+    use AvisoTrait;
 
     // eventos
     const EVENTO_ENTRADA_WAYPOINT = 1;

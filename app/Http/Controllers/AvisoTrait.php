@@ -11,7 +11,7 @@ use App\Waypoint;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 
-trait AvisosTrait
+trait AvisoTrait
 {
     protected $aviso_cliente;
 
