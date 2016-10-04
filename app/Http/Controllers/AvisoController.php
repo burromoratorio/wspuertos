@@ -8,6 +8,10 @@ use App\Aviso;
 
 class AvisoController extends Controller
 {
+    const ESTADO_PENDIENTE = 1;
+    const ESTADO_ENVIADO = 2;
+    const ESTADO_FALLIDO = 3;
+
     use AvisoTrait;
 
     public function update(Request $request, $id) {
