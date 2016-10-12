@@ -20,7 +20,7 @@ class SendAvisoTest extends TestCase
         ]);
         AvisoConfiguracion::firstOrCreate([
             'aviso_cliente_id' => $aviso_cliente->id,
-            'aviso_configuracion_tipo' => 1, // "waypoint id"
+            'aviso_configuracion_tipo_id' => 1, // "waypoint id"
             'valor' => $waypoint->waypoint_id, // <waypoint_id>
         ]);
         $destinatarios = factory(App\Destinatario::class, 5)->create([

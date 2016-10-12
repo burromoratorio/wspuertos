@@ -34,7 +34,7 @@ $factory->define(App\AvisoConfiguracion::class, function (Faker\Generator $faker
         'aviso_cliente_id' => function () {
             return factory(App\AvisoCliente::class)->create()->id;
         },
-        'aviso_configuracion_tipo' => 1, // "waypoint id"
+        'aviso_configuracion_tipo_id' => 1, // "waypoint id"
         'valor' => function () {
             return factory(App\Waypoint::class)->create()->waypoint_id;
         },

@@ -8,5 +8,5 @@ class AvisoConfiguracion extends Model
 {
     protected $table = 'avisos_configuraciones';
     protected $dateFormat = 'Y-m-d H:i:s';
-    protected $fillable = ['aviso_cliente_id', 'aviso_configuracion_tipo', 'valor'];
+    protected $fillable = ['aviso_cliente_id', 'aviso_configuracion_tipo_id', 'valor'];
 }
