@@ -71,7 +71,7 @@ class EventoController extends Controller
     }
 
     protected function isNotifiable($evento_tipo_id) {
-        return array_key_exists($evento_tipo_id, $this->notifiable_events);
+        return collect($this->notifiable_events)->contains($evento_tipo_id);
     }
 
     protected function processAviso() {
