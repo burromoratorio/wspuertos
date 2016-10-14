@@ -30,6 +30,7 @@ trait AvisoTrait
             !AvisoConfiguracion::where('aviso_cliente_id', $this->aviso_cliente->id)->first() ||
             AvisoConfiguracion::where([
                 ['aviso_cliente_id', $this->aviso_cliente->id],
+                // TODO: agregar aviso_configuracion_tipo_id
                 ['valor', $waypoint_id],
             ])->first()
         );
@@ -73,6 +74,6 @@ trait AvisoTrait
 
     protected function sendAviso($aviso_id, $subject, $body, $addresses) {
         if ($addresses == "") throw new \Exception("Falta mail para el aviso: $aviso_id. $subject");
-        //Redis::publish('mails', json_encode(compact('aviso_id', 'subject', 'body', 'addresses')));
+        Redis::publish('mails', json_encode(compact('aviso_id', 'subject', 'body', 'addresses')));
     }
 }
