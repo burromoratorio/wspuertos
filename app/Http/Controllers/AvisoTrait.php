@@ -61,7 +61,7 @@ trait AvisoTrait
         $waypoint = Waypoint::find($waypoint_id);
         if ($evento_tipo_id == static::AVISO_ENTRADA_WAYPOINT) {
             $subject = "SIAC - ".$dominio." ingresa al waypoint: ".$waypoint->nombre;
-            $body = "Hora de ingreso: ".Carbon::createFromTimestamp($timestamp)->format('d/m/Y H:i:s');
+            $body = "Hora de ingreso: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('d/m/Y H:i:s');
         } else if ($evento_tipo_id == static::AVISO_SALIDA_WAYPOINT) {
             $subject = "SIAC - $dominio sale del waypoint: ".$waypoint->nombre;
             $body = "Hora de salida: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('d/m/Y H:i:s');
