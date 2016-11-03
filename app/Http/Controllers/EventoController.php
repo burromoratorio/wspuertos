@@ -66,24 +66,26 @@ class EventoController extends Controller
             'eventable_id' => $this->waypoint_id,
             'eventable_type' => 'App\Waypoint', // mandarlo desde el puerto
         ]);
-        $this->processAviso();
+        $this->processAvisos();
         return "OK";
     }
 
-    protected function isNotifiable($evento_tipo_id) {
-        return collect($this->notifiable_events)->contains($evento_tipo_id);
-    }
-
-    protected function processAviso() {
+    protected function processAvisos() {
         if (!$this->isNotifiable($this->evento_tipo_id))
             return;
 
         $aviso_tipo_id = $this->eventos_avisos[$this->evento_tipo_id];
-        if (!$this->mustNotify($this->movil_id, $this->cliente_id, $aviso_tipo_id, $this->waypoint_id))
-            return;
+        $this->getAvisosCliente($this->movil_id, $this->cliente_id, $aviso_tipo_id, $this->waypoint_id)
+            ->each(function($aviso_cliente) {
+                // esto va a terminar siendo un condicional
+                $info_mail = $this->makeMailWaypoint(
+                    $this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id
+                );
+                $this->notify($info_mail['subject'], $info_mail['body'], $aviso_cliente->id);
+            })
+    }
 
-        // esto va a terminar siendo un condicional
-        $info_mail = $this->makeMailWaypoint($this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id);
-        $this->notify($info_mail['subject'], $info_mail['body']);
+    protected function isNotifiable($evento_tipo_id) {
+        return collect($this->notifiable_events)->contains($evento_tipo_id);
     }
 }

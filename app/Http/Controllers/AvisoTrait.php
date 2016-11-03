@@ -13,41 +13,47 @@ use Illuminate\Support\Facades\Redis;
 
 trait AvisoTrait
 {
-    protected $aviso_cliente;
-
-    protected function mustNotify($movil_id, $cliente_id, $aviso_tipo_id, $waypoint_id) {
-        $this->aviso_cliente = AvisoCliente::where([
-            ['cliente_id', $cliente_id],
-            ['aviso_tipo_id', $aviso_tipo_id],
-        ])->first();
-        return $this->aviso_cliente && (
-            !AvisoMovil::where('aviso_cliente_id', $this->aviso_cliente->id)->first() ||
-            AvisoMovil::where([
-                ['aviso_cliente_id', $this->aviso_cliente->id],
-                ['movil_id', $movil_id],
-            ])->first()
-        ) && (
-            !AvisoConfiguracion::where('aviso_cliente_id', $this->aviso_cliente->id)->first() ||
-            AvisoConfiguracion::where([
-                ['aviso_cliente_id', $this->aviso_cliente->id],
-                ['valor', $waypoint_id],
-            ])->first()
-        );
+    protected function getAvisosCliente($movil_id, $cliente_id, $aviso_tipo_id, $waypoint_id) {
+        return AvisoCliente
+            ::where([
+                ['cliente_id', $cliente_id],
+                ['aviso_tipo_id', $aviso_tipo_id],
+            ])
+            ->get()
+            ->filter(function($aviso_cliente) {
+                return (
+                    !AvisoMovil::where([
+                        ['aviso_cliente_id', $aviso_cliente->id]
+                    ])->first() ||
+                    AvisoMovil::where([
+                        ['aviso_cliente_id', $aviso_cliente->id],
+                        ['movil_id', $movil_id],
+                    ])->first()
+                ) && (
+                    !AvisoConfiguracion::where([
+                        ['aviso_cliente_id', $aviso_cliente->id]
+                    ])->first() ||
+                    AvisoConfiguracion::where([
+                        ['aviso_cliente_id', $aviso_cliente->id],
+                        ['valor', $waypoint_id],
+                    ])->first()
+                );
+            });
     }
 
-    protected function createAviso($aviso) {
+    protected function createAviso($aviso, $aviso_cliente_id) {
         return Aviso::create([
-            'aviso_cliente_id' => $this->aviso_cliente->id,
+            'aviso_cliente_id' => $aviso_cliente_id,
             'estado_envio_id' => static::ESTADO_PENDIENTE,
             'aviso' => $aviso,
         ])->id;
     }
 
-    protected function notify($subject, $body) {
+    protected function notify($subject, $body, $aviso_cliente_id) {
         $subject = str_replace(";", " ", $subject); // evita que se rompa la cadena a enviar
-        $aviso_id = $this->createAviso("$subject;$body");
+        $aviso_id = $this->createAviso("$subject;$body", $aviso_cliente_id);
         $addresses = AvisoDestinatario
-            ::where('aviso_cliente_id', $this->aviso_cliente->id)
+            ::where('aviso_cliente_id', $aviso_cliente_id)
             ->with('destinatario')
             ->get()
             ->map(function($aviso_destinatario) {
