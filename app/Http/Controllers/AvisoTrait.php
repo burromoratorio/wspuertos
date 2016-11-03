@@ -20,7 +20,7 @@ trait AvisoTrait
                 ['aviso_tipo_id', $aviso_tipo_id],
             ])
             ->get()
-            ->filter(function($aviso_cliente) {
+            ->filter(function($aviso_cliente) use ($movil_id, $waypoint_id) {
                 return (
                     !AvisoMovil::where([
                         ['aviso_cliente_id', $aviso_cliente->id]

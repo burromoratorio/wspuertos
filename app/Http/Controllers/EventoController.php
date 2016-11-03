@@ -82,7 +82,7 @@ class EventoController extends Controller
                     $this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id
                 );
                 $this->notify($info_mail['subject'], $info_mail['body'], $aviso_cliente->id);
-            })
+            });
     }
 
     protected function isNotifiable($evento_tipo_id) {
