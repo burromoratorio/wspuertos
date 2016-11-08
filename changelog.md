@@ -19,3 +19,7 @@ c9d61ab Corrige tests
 071f51d Optimiza carga
 7c67fb0 Mejora envoy
 26758f1 Chequea si debe enviar mail
+
+### v0.1.1 (19/10/2016)
+
+8d512c0 Fix hora GMT
