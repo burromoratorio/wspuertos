@@ -20,6 +20,7 @@
     cd /var/www/{{ "$project" }}
     chmod -R ugo+w storage
     git pull origin master
+    git fetch --tags
     composer install --no-dev
 
 @endtask
