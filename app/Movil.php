@@ -21,4 +21,16 @@ class Movil extends Model
     public function reenvio_movil() {
         return $this->hasOne('App\ReenvioMovil');
     }
+    static function viajesAbiertos($dominio){
+        return Movil::wherehas('viajes',function($query){ 
+                $query->select('viaje_id','movil_id')
+                ->whereNull('fecha_fin'); })
+                ->where('dominio',$dominio)->first();
+    }
+    public function viajes() {
+        return $this->hasMany('App\Viaje');
+    }
+    public function instalacion() {
+        return $this->hasOne('App\Instalacion');
+    }
 }
