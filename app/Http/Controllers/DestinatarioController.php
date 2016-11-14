@@ -84,12 +84,8 @@ class DestinatarioController extends Controller
 
                 $destinatario->fill($input)->save();
 
-                return response()->json(['id' => $destinatario->id,
-                                         'mail' => $destinatario->mail,
-                                         'cliente_id' => $destinatario->cliente_id,
-                                         'message' => 'El Destinatario ha sido actualizado satisfactoriamente',
-                                         'status' => 200
-                                        ]);
+                return $this->getResponseOK($destinatario, 'update');
+
             }
 
         }
@@ -144,6 +140,17 @@ class DestinatarioController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getDestinatariosCliente($id)
+    {
+        return Destinatario::where('cliente_id', $id)
+                           ->get();
     }
 
 }
