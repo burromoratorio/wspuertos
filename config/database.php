@@ -87,15 +87,6 @@ return [
             'prefix'   => env('DB_PREFIX', ''),
             'timezone' => env('DB_TIMEZONE', '+00:00'),
         ],
-	'siac' => [
-            'driver'   => 'sqlsrv',
-            'host'     => env('DB_SIAC_HOST', 'localhost'),
-            'database' => env('DB_SIAC_DATABASE', 'forge'),
-            'username' => env('DB_SIAC_USERNAME', 'forge'),
-            'password' => env('DB_SIAC_PASSWORD', ''),
-            'prefix'   => env('DB_PREFIX', ''),
-            'timezone' => env('DB_TIMEZONE', '+00:00'),
-        ],
 
     ],
 
