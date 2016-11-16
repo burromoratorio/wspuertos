@@ -90,14 +90,4 @@ class ReenvioController extends Controller
     protected function publishToRedis($id, $host, $port, $msg) {
         Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg')));
     }
-    public function testPlatform(Request $request) {
-        $jsonReq = $request->json();
-        $msg = $jsonReq->get('msg');
-        $host           = $jsonReq->get('host');
-        $port           = $jsonReq->get('port');
-        $proto          = $jsonReq->get('proto');
-        $id             = $jsonReq->get('id');
-        Redis::publish('testUdp',json_encode(compact('id','host','port','msg','proto')) );
-       
-    }
 }
