@@ -39,7 +39,8 @@ class ReenvioController extends Controller
                     $reenvioPosicionHost->id,
                     $reenvioHost->destino,
                     $reenvioHost->puerto,
-                    $reenvioPosicion->cadena
+                    $reenvioPosicion->cadena,
+                    $reenvioHost->protocolo
                 );
             });
         return "OK\n";
@@ -79,7 +80,8 @@ class ReenvioController extends Controller
                 $reenvioPosicionHost->id,
                 $reenvioHost->destino,
                 $reenvioHost->puerto,
-                $reenvioPosicionHost->reenvio_posicion->cadena
+                $reenvioPosicionHost->reenvio_posicion->cadena,
+                $reenvioHost->protocolo
             );
         }
         $reenvioPosicionHost->estado_envio_id = $estado;
@@ -87,7 +89,11 @@ class ReenvioController extends Controller
         return "Update OK";
     }
 
-    protected function publishToRedis($id, $host, $port, $msg) {
-        Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg')));
+    protected function publishToRedis($id, $host, $port, $msg,$proto) {
+        if($proto=='TCP'){
+	    Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg','proto')));
+	}else{
+	    Redis::publish('caessat-udp',json_encode(compact('id','host','port','msg','proto')) );
+	}
     }
 }
