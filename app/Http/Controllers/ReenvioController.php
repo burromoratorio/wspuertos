@@ -45,7 +45,7 @@ class ReenvioController extends Controller
         return "OK\n";
     }
 
-    private function checkLength($name, $field, $length) {
+    private function checkExactLength($name, $field, $length) {
         if (strlen($field) != $length)
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
@@ -55,19 +55,46 @@ class ReenvioController extends Controller
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
         $cadena =
             "PC".
-            $this->checkLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).
-            $this->checkLength("patente", substr($fields['patente'], 0, 6), 6).
-            $this->checkLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).
-            $this->checkLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).
-            $this->checkLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).
-            $this->checkLength("sentido", sprintf("%03d", $fields['sentido']), 3).
-            $this->checkLength("posGpsValida", $fields['posGpsValida'], 1).
-            $this->checkLength("evento", sprintf("%02d", $fields['evento']), 2).
-            $this->checkLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).
-            $this->checkLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
-            $this->checkLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
+            $this->checkExactLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).
+            $this->checkExactLength("patente", substr($fields['patente'], 0, 6), 6).
+            $this->checkExactLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).
+            $this->checkExactLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).
+            $this->checkExactLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).
+            $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).
+            $this->checkExactLength("posGpsValida", $fields['posGpsValida'], 1).
+            $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2).
+            $this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).
+            $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
+            $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
             "|";
         return $cadena;
+    }
+
+    private function checkMaxLength($name, $field, $length) {
+        if (strlen($field) > $length)
+            throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
+        return $field;
+    }
+
+    private function mkSoapString(array $fields) {
+        return json_encode([
+            "user" => "user",
+            "password" => "password",
+            "patente" => $this->checkMaxLength("patente", $fields['patente'], 7),
+            "gps_datetime" => Carbon::createFromTimestamp($fields['hora'])->format('Y-m-d H:i:s'),
+            "latitud" => $this->checkMaxLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9),
+            "longitud" => $this->checkMaxLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10),
+            "velocidad" => $this->checkMaxLength("velocidad", sprintf("%03d", $fields['velocidad']), 3),
+            "temp_congelado" => "0,0",
+            "temp_refrigerado" => "0,0",
+            "antena" => $fields['antena'],
+            "location_name" => "",
+            "direccion" => $fields['sentido_id'], // mapear
+            "analog3" => "",
+            "analog4" => "",
+            "analog5" => "",
+            "analog6" => "",
+        ]);
     }
 
     public function update(Request $request, $id) {
@@ -88,11 +115,11 @@ class ReenvioController extends Controller
         return "Update OK";
     }
 
-    protected function publishToRedis($id, $host, $port, $msg,$proto) {
-        if($proto=='TCP'){
-	    Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg','proto')));
-	}else{
-	    Redis::publish('caessat-udp',json_encode(compact('id','host','port','msg','proto')) );
-	}
+    protected function publishToRedis($id, $host, $port, $msg, $proto) {
+        if ($proto == 'TCP') {
+            Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg','proto')));
+        } else {
+            Redis::publish('caessat-udp', json_encode(compact('id','host','port','msg','proto')));
+        }
     }
 }
