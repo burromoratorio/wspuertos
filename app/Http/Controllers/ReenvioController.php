@@ -10,6 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 class ReenvioController extends Controller
 {
+    const MODO_CAESSAT=1;
+    const MODO_PRODTECH=2; // soap
+
     const ESTADO_PENDIENTE = 1;
     const ESTADO_ENVIADO = 2;
     const ESTADO_FALLIDO = 3;
@@ -20,14 +23,22 @@ class ReenvioController extends Controller
 
     public function store(Request $request) {
         //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
-        $reenvioPosicion = ReenvioPosicion::create([
-            'movil_id' => $request->input('movil_id'),
-            'cadena' => $this->mkCaessatString($request->all()),
-        ]);
-        $reenvioPosicion
-            ->reenvios_moviles
-            ->filter(function($value) { return $value->activo == '1' ;})
-            ->each(function ($reenvio_movil) use ($reenvioPosicion) {
+        ReenvioMovil::
+            where([
+                'movil_id' => $request->input('movil_id'),
+                'activo' => 1
+            ])
+            ->each(function ($reenvio_movil) use ($request) {
+
+                $cadena = $reenvio_movil->modo_id == static::MODO_CAESSAT ?
+                    $this->mkCaessatString($request->all()) :
+                    $this->mkSoapString($request->all());
+
+                $reenvioPosicion = ReenvioPosicion::create([
+                    'movil_id' => $reenvio_movil->movil_id,
+                    'cadena' => $cadena,
+                ]);
+
                 $reenvioPosicionHost = ReenvioPosicionHost::create([
                     'reenvio_posicion_id' => $reenvioPosicion->id,
                     'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
@@ -39,9 +50,11 @@ class ReenvioController extends Controller
                     $reenvioHost->destino,
                     $reenvioHost->puerto,
                     $reenvioPosicion->cadena,
-                    $reenvioHost->protocolo
+                    $reenvioHost->protocolo,
+                    $reenvio_movil->modo_id,
                 );
             });
+
         return "OK\n";
     }
 
@@ -100,6 +113,7 @@ class ReenvioController extends Controller
     public function update(Request $request, $id) {
         $reenvioPosicionHost = ReenvioPosicionHost::findOrFail($id);
         $estado = $request->input('estado_envio_id');
+        $modo = $request->input('modo');
         if ($estado == static::ESTADO_PENDIENTE) {
             $reenvioHost = $reenvioPosicionHost->reenvio_host;
             $this->publishToRedis(
@@ -107,7 +121,8 @@ class ReenvioController extends Controller
                 $reenvioHost->destino,
                 $reenvioHost->puerto,
                 $reenvioPosicionHost->reenvio_posicion->cadena,
-                $reenvioHost->protocolo
+                $reenvioHost->protocolo,
+                $modo
             );
         }
         $reenvioPosicionHost->estado_envio_id = $estado;
