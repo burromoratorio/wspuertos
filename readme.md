@@ -41,10 +41,6 @@ echo 'alias errors="/var/www/wspuertos/util/errors.sh"' >> ~/.bashrc
 
 Debido a que en ocasiones la API no llega a procesar todas las request cuando llegan al mismo tiempo, es neceario saber las optimizaciones que aún quedan por realizar en la aplicación o en el server.
 
-#### Migrar a Lumen
-
-Laravel realiza un montón de procesamiento pensado para servir una web. Debido a que la API sólo necesitaría enviar datos, Lumen sería lo ideal ya que quita mucha funcionalidad innecesaria para una API.
-
 #### Migrar a php 7
 
 Con la versión 7 de php, se mejoró considerablemente la velocidad de procesamiento (x2) y el consumo de recursos (/2).
@@ -67,6 +63,21 @@ Para ejecutar los tests:
 ```bash
 phpunit
 ```
+
+## Funcionamiento
+
+EL puerto realiza un POST al recurso **reenvios** para que el controlador registre dicho reenvio en **reenvios_posiciones**.
+
+Cada registro en **reenvios_posiciones** puede estar asociado a más de un **reenvio movil** ya que en ciertos casos, un cliente puede solicitar que los reenvíos se realicen a 2 plataformas distintas.
+
+------
+
+Tablas involucradas:
+
+- reenvios_posiciones (log): Contiene los registros que se generan por cada post que realiza el puerto (un post - un registro)
+- reenvios_posiciones_hosts (log): Contiene un registro por cada host registrado para el móvil para el que se insertó en reenvios_posiciones
+- reenvios_moviles (cfg): tabla de configuración de envíos (móvil y host)
+- reenvios_hosts (cfg): se configuran los hosts
 
  [reenvios-caessat]: /Reenvios-de-posiciones
  [guia-instalacion]: /Web/Creacion-proyecto-web#instalacion-proyectos
