@@ -18,6 +18,7 @@ class EventoController extends Controller
     const EVENTO_ENTRADA_WAYPOINT = 1;
     const EVENTO_SALIDA_WAYPOINT = 2;
     const EVENTO_DESENGANCHE = 3;
+    const EVENTO_ENGANCHE = 4;
 
     /**
      * Eventos que se avisarán
@@ -27,6 +28,7 @@ class EventoController extends Controller
     const AVISO_ENTRADA_WAYPOINT = 1;
     const AVISO_SALIDA_WAYPOINT = 2;
     const AVISO_DESENGANCHE = 3;
+    const AVISO_ENGANCHE = 4;
 
     /**
      * Posición fake hasta que las posiciones se registren en la nueva BBDD
@@ -43,7 +45,8 @@ class EventoController extends Controller
     protected $eventos_avisos = [
         self::EVENTO_ENTRADA_WAYPOINT => self::AVISO_ENTRADA_WAYPOINT,
         self::EVENTO_SALIDA_WAYPOINT => self::AVISO_SALIDA_WAYPOINT,
-        self::EVENTO_DESENGANCHE => self::AVISO_DESENGANCHE
+        self::EVENTO_DESENGANCHE => self::AVISO_DESENGANCHE,
+        self::EVENTO_ENGANCHE => self::AVISO_ENGANCHE,
     ];
 
     /**
@@ -91,8 +94,7 @@ class EventoController extends Controller
     }
 
     /**
-     * Guarda el evento en BBDD.
-     * Además, si hay que avisar al cliente del evento, se envía un mail
+     * Guarda el evento en BBDD, y si hay que avisar al cliente, se envía un mail
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -121,7 +123,8 @@ class EventoController extends Controller
             $eventable_type = 'App\Waypoint';
             $adviseMethod = 'makeMailWaypoint';
         }
-        else if ($this->evento_tipo_id == self::EVENTO_DESENGANCHE)
+        else if ($this->evento_tipo_id == self::EVENTO_DESENGANCHE ||
+                 $this->evento_tipo_id == self::EVENTO_ENGANCHE)
         {
             $entity_id = self::FAKE_POSICION_ID;
             $eventable_type = 'App\Posicion';
