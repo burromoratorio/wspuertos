@@ -40,6 +40,7 @@ class SendMultipleAvisoTest extends TestCase
             ]);
         });
 
+        $this->withoutEvents();
         $this->post('/eventos', [
             'evento_tipo_id' => self::ENTRADA_WAYPOINT,
             'movil_id' => $movil->movil_id,
