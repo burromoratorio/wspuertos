@@ -9,7 +9,7 @@ use App\AvisoConfiguracion;
 use App\AvisoDestinatario;
 use App\Waypoint;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Redis;
+use App\Events\AvisoCreated;
 
 trait AvisoTrait
 {
@@ -103,7 +103,7 @@ trait AvisoTrait
                 return $aviso_destinatario->destinatario->mail;
             })
             ->toArray();
-        $this->sendAviso($aviso_id, $subject, $body, implode(",", $addresses));
+        event(new AvisoCreated($aviso_id, $subject, $body, implode(",", $addresses)));
     }
 
     /**
@@ -157,19 +157,5 @@ trait AvisoTrait
         $subject = "SIAC - $dominio ${keyword}enganchó";
         $body = "Hora de ${keyword}enganche: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('d/m/Y H:i:s');
         return compact('subject', 'body');
-    }
-
-    /**
-     * Publica el mail en un canal Redis para un envío asincrónico
-     *
-     * @param  int  $aviso_id
-     * @param  string  $subject
-     * @param  string  $body
-     * @param  string  $addresses
-     * @return void
-     */
-    protected function sendAviso($aviso_id, $subject, $body, $addresses) {
-        if ($addresses == "") throw new \Exception("Falta mail para el aviso: $aviso_id. $subject");
-        Redis::publish('mails', json_encode(compact('aviso_id', 'subject', 'body', 'addresses')));
     }
 }

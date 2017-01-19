@@ -5,6 +5,7 @@ use Laravel\Lumen\Testing\DatabaseTransactions;
 use App\AvisoCliente;
 use App\AvisoConfiguracion;
 use App\Destinatario;
+use App\Events\AvisoCreated;
 
 class SendAvisoTest extends TestCase
 {
@@ -32,6 +33,7 @@ class SendAvisoTest extends TestCase
             ]);
         });
 
+        $this->expectsEvents(AvisoCreated::class);
         $this->post('/eventos', [
             'evento_tipo_id' => self::ENTRADA_WAYPOINT,
             'movil_id' => $movil->movil_id,
