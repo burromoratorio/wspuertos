@@ -6,7 +6,7 @@ use App\AvisoCliente;
 use App\AvisoConfiguracion;
 use App\Destinatario;
 
-class SendMultipleAvisoTest extends TestCase
+class AvisoWaypointMultipleTest extends TestCase
 {
     use DatabaseTransactions;
 

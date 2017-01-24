@@ -7,7 +7,7 @@ use App\AvisoConfiguracion;
 use App\Destinatario;
 use App\Events\AvisoCreated;
 
-class SendAvisoTest extends TestCase
+class AvisoWaypointTest extends TestCase
 {
     use DatabaseTransactions;
 

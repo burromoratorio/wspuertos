@@ -3,7 +3,7 @@
 use Laravel\Lumen\Testing\DatabaseTransactions;
 use App\Movil;
 
-class CreateEventTest extends TestCase
+class EventoWaypointTest extends TestCase
 {
     use DatabaseTransactions;
 

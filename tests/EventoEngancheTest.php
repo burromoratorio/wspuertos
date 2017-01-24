@@ -6,7 +6,7 @@ use App\AvisoCliente;
 use App\AvisoConfiguracion;
 use App\Destinatario;
 
-class EngancheTest extends TestCase
+class EventoEngancheTest extends TestCase
 {
     use DatabaseTransactions;
 
