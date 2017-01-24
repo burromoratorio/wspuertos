@@ -5,8 +5,11 @@ return [
     'description' => 'Web service de apoyo del puerto',
     'author' => 'Juan Eugenio Abadie',
 
+    'prodtech_user' => env('PRODTECH_USER'),
+    'prodtech_password' => env('PRODTECH_PASSWORD'),
 
-        /*
+
+    /*
     |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------

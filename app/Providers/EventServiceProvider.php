@@ -15,5 +15,8 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\AvisoCreated' => [
             'App\Listeners\SendMailAviso',
         ],
+        'App\Events\ReenvioCreated' => [
+            'App\Listeners\SendPositionToPlatform',
+        ],
     ];
 }
