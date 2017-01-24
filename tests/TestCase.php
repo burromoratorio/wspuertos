@@ -5,7 +5,7 @@ use App\Cliente;
 use App\Waypoint;
 use App\Destinatario;
 
-class TestCase extends Laravel\Lumen\Testing\TestCase
+abstract class TestCase extends Laravel\Lumen\Testing\TestCase
 {
     const ENTRADA_WAYPOINT=1;
     const SALIDA_WAYPOINT=2;
