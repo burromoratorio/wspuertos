@@ -1,40 +1,39 @@
 <?php
 
 use Laravel\Lumen\Testing\DatabaseTransactions;
-use App\Movil;
 
-class CreateEventTest extends TestCase
+use App\AvisoCliente;
+use App\AvisoConfiguracion;
+use App\Destinatario;
+
+class EngancheTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testInWaypoint()
+    public function testEngancheAviso()
     {
         $this->withoutEvents();
         $movil = $this->getMovil();
-        $waypoint = $this->getWaypoint();
         $this->post('/eventos', [
-            'evento_tipo_id' => self::ENTRADA_WAYPOINT,
-            'movil_id' => $movil->movil_id,
-            'waypoint_id' => $waypoint->waypoint_id,
+            'evento_tipo_id' => self::ENGANCHE,
             'cliente_id' => $movil->cliente_id,
+            'movil_id' => $movil->movil_id,
             'dominio' => 'ABC123',
-            'timestamp' => 123456,
+            'timestamp' => 1485196076,
         ]);
         $this->assertResponseStatus(201);
     }
 
-    public function testOutWaypoint()
+    public function testDesengancheAviso()
     {
         $this->withoutEvents();
         $movil = $this->getMovil();
-        $waypoint = $this->getWaypoint();
         $this->post('/eventos', [
-            'evento_tipo_id' => self::SALIDA_WAYPOINT,
-            'movil_id' => $movil->movil_id,
-            'waypoint_id' => $waypoint->waypoint_id,
+            'evento_tipo_id' => self::DESENGANCHE,
             'cliente_id' => $movil->cliente_id,
+            'movil_id' => $movil->movil_id,
             'dominio' => 'ABC123',
-            'timestamp' => 123456,
+            'timestamp' => 1485196096,
         ]);
         $this->assertResponseStatus(201);
     }

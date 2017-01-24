@@ -8,10 +8,6 @@ use App\Aviso;
 
 class AvisoController extends Controller
 {
-    const ESTADO_PENDIENTE = 1;
-    const ESTADO_ENVIADO = 2;
-    const ESTADO_FALLIDO = 3;
-
     use AvisoTrait;
 
     public function index()
@@ -26,7 +22,7 @@ class AvisoController extends Controller
     public function update(Request $request, $id) {
         $aviso = Aviso::findOrFail($id);
         $estado = $request->input('estado_envio_id');
-        if ($estado == static::ESTADO_PENDIENTE) {
+        if ($estado == self::$ESTADO_PENDIENTE) {
             // TODO: terminar reintentos
             /*$aviso_id = $aviso->id;
             $subject = $aviso->subject;

@@ -40,6 +40,7 @@ class SendMultipleAvisoTest extends TestCase
             ]);
         });
 
+        $this->withoutEvents();
         $this->post('/eventos', [
             'evento_tipo_id' => self::ENTRADA_WAYPOINT,
             'movil_id' => $movil->movil_id,
@@ -48,6 +49,6 @@ class SendMultipleAvisoTest extends TestCase
             'dominio' => 'ABC123',
             'timestamp' => 123456,
         ]);
-        $this->assertEquals("OK", $this->response->getContent());
+        $this->assertResponseStatus(201);
     }
 }

@@ -23,3 +23,31 @@ c9d61ab Corrige tests
 ### v0.1.1 (19/10/2016)
 
 8d512c0 Fix hora GMT
+
+### v0.2.0 (24/01/2017)
+
+a52370c Ordena tests (des)enganche
+faa860e Testing
+55c0d49 Utiliza eventos para el envío de mail para facilitar pruebas
+c828655 Mejora menejo de nombres de archivo
+e82ad3f Agrega evento, aviso de enganche, y docblocks
+992fabf Refactoriza, agrega docblocks para mejorar lectura, implementa envío de desenganche
+e4aa651 Contempla aviso de desenganche
+8800349 se quita log
+f677262 soporte para envío de posiciones por udp a dadores
+0be2b23 Revert "integarcion con wsviajes"
+82ed805 Revert "se agrega configuracion de database siac"
+11d059a Agrego funcion que lista los avisos y creo la ruta para manejar la peticion
+5c417d4 Creo algunas rutas y agrego controladores
+6ef9f19 se agrega configuracion de database siac
+0cc7d72 integarcion con wsviajes
+0f5d631 Obtiene los tags en cada despliegue
+bc5363e Actualiza changelog para agregar path: tag v0.1.1
+20a3c42 Merge branch 'avisos-new'
+fd876b4 Agrega test múltiples aviso_cliente_id
+e8c9ae5 Fix bugs
+d1aecae Soporta varias combinaciones cliente_id-aviso_tipo_id
+999ce6c Merged branch master into master
+64af31d Agrego controlador para destinatarios
+479918a Agrego rutas para el modelo destinatarios
+2a373da Modifico modelo

@@ -10,39 +10,96 @@ class EventoController extends Controller
 {
     use AvisoTrait;
 
-    // eventos
+    /**
+     * Eventos soportados
+     *
+     * @var
+     */
     const EVENTO_ENTRADA_WAYPOINT = 1;
     const EVENTO_SALIDA_WAYPOINT = 2;
-    // avisos
+    const EVENTO_DESENGANCHE = 3;
+    const EVENTO_ENGANCHE = 4;
+
+    /**
+     * Eventos que se avisarán
+     *
+     * @var
+     */
     const AVISO_ENTRADA_WAYPOINT = 1;
     const AVISO_SALIDA_WAYPOINT = 2;
-    // estados
-    const ESTADO_PENDIENTE = 1;
-    const ESTADO_ENVIADO = 2;
-    const ESTADO_FALLIDO = 3;
-    // eventos notificables
-    protected $notifiable_events = [
-        self::EVENTO_ENTRADA_WAYPOINT,
-        self::EVENTO_SALIDA_WAYPOINT,
-    ];
-    // mapa de evento a tipo_aviso
+    const AVISO_DESENGANCHE = 3;
+    const AVISO_ENGANCHE = 4;
+
+    /**
+     * Posición fake hasta que las posiciones se registren en la nueva BBDD
+     *
+     * @var
+     */
+    const FAKE_POSICION_ID = 1;
+
+    /**
+     * Mapa de eventos a tipo_aviso
+     *
+     * @var
+     */
     protected $eventos_avisos = [
         self::EVENTO_ENTRADA_WAYPOINT => self::AVISO_ENTRADA_WAYPOINT,
         self::EVENTO_SALIDA_WAYPOINT => self::AVISO_SALIDA_WAYPOINT,
+        self::EVENTO_DESENGANCHE => self::AVISO_DESENGANCHE,
+        self::EVENTO_ENGANCHE => self::AVISO_ENGANCHE,
     ];
 
-    // propiedades del evento
+    /**
+     * Tipo de evento recibido
+     *
+     * @var
+     */
     protected $evento_tipo_id;
-    protected $cliente_id;
-    protected $movil_id;
-    protected $dominio;
-    protected $timestamp;
-    protected $waypoint_id;
 
-    public function index(Request $request) {
+    /**
+     * Cliente perteneciente al evento
+     *
+     * @var
+     */
+    protected $cliente_id;
+
+    /**
+     * Móvil afectado por el evento
+     *
+     * @var
+     */
+    protected $movil_id;
+
+    /**
+     * Patente del móvil
+     *
+     * @var
+     */
+    protected $dominio;
+
+    /**
+     * Hora gps del evento
+     *
+     * @var
+     */
+    protected $timestamp;
+
+    /**
+     * Lista los eventos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index() {
         return Evento::take(30)->get();
     }
 
+    /**
+     * Guarda el evento en BBDD, y si hay que avisar al cliente, se envía un mail
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @throws Exception
+     */
     public function store(Request $request) {
         $this->validate($request, [
             'evento_tipo_id' => 'required|numeric',
@@ -50,7 +107,7 @@ class EventoController extends Controller
             'movil_id' => 'required|numeric',
             'dominio' => 'required|alpha_num',
             'timestamp' => 'required|numeric',
-            'waypoint_id' => 'required|numeric',
+            'waypoint_id' => 'required_if:evento_tipo_id,1,2|numeric', // requerido si entrada/salida wp
         ]);
 
         $this->evento_tipo_id = $request->input('evento_tipo_id');
@@ -58,34 +115,65 @@ class EventoController extends Controller
         $this->movil_id = $request->input('movil_id');
         $this->dominio = $request->input('dominio');
         $this->timestamp = $request->input('timestamp');
-        $this->waypoint_id = $request->input('waypoint_id');
+
+        if ($this->evento_tipo_id == self::EVENTO_ENTRADA_WAYPOINT ||
+            $this->evento_tipo_id == self::EVENTO_SALIDA_WAYPOINT)
+        {
+            $entity_id = $request->input('waypoint_id');
+            $eventable_type = 'App\Waypoint';
+            $adviseMethod = 'makeMailWaypoint';
+        }
+        else if ($this->evento_tipo_id == self::EVENTO_DESENGANCHE ||
+                 $this->evento_tipo_id == self::EVENTO_ENGANCHE)
+        {
+            $entity_id = self::FAKE_POSICION_ID;
+            $eventable_type = 'App\Posicion';
+            $adviseMethod = 'makeMailDesenganche';
+        }
+        else
+        {
+            throw new \Exception("Evento desconocido");
+        }
 
         Evento::create([
             'evento_tipo_id' => $this->evento_tipo_id,
             'movil_id' => $this->movil_id,
-            'eventable_id' => $this->waypoint_id,
-            'eventable_type' => 'App\Waypoint', // mandarlo desde el puerto
+            'eventable_id' => $entity_id,
+            'eventable_type' => $eventable_type,
         ]);
-        $this->processAvisos();
-        return "OK";
+
+        if ($this->isAdvisable())
+        {
+            $this->advise($entity_id, $adviseMethod);
+        }
+
+        return response()->json("OK", 201);
     }
 
-    protected function processAvisos() {
-        if (!$this->isNotifiable($this->evento_tipo_id))
-            return;
+    /**
+     * Chequea si el evento recibido debe avisarse al cliente
+     *
+     * @return bool
+     */
+    protected function isAdvisable() {
+        return collect($this->eventos_avisos)->keys()->contains($this->evento_tipo_id);
+    }
 
+    /**
+     * Avisa al cliente del evento sucedido
+     *
+     * @param  int  $entity_id
+     * @param  string  $adviseMethod
+     * @return bool
+     */
+    protected function advise($entity_id, $adviseMethod) {
         $aviso_tipo_id = $this->eventos_avisos[$this->evento_tipo_id];
-        $this->getAvisosCliente($this->movil_id, $this->cliente_id, $aviso_tipo_id, $this->waypoint_id)
-            ->each(function($aviso_cliente) {
-                // esto va a terminar siendo un condicional
-                $info_mail = $this->makeMailWaypoint(
-                    $this->dominio, $this->evento_tipo_id, $this->timestamp, $this->waypoint_id
+        $this->getAvisosCliente($this->movil_id, $this->cliente_id, $aviso_tipo_id, $entity_id)
+            ->each(function($aviso_cliente) use ($entity_id, $adviseMethod) {
+                $info_mail = $this->{$adviseMethod}(
+                    $this->dominio, $this->evento_tipo_id, $this->timestamp, $entity_id
                 );
                 $this->notify($info_mail['subject'], $info_mail['body'], $aviso_cliente->id);
             });
-    }
-
-    protected function isNotifiable($evento_tipo_id) {
-        return collect($this->notifiable_events)->contains($evento_tipo_id);
     }
 }

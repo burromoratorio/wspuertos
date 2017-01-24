@@ -9,6 +9,8 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
 {
     const ENTRADA_WAYPOINT=1;
     const SALIDA_WAYPOINT=2;
+    const DESENGANCHE=3;
+    const ENGANCHE=4;
 
     /**
      * Creates the application.
