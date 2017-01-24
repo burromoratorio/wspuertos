@@ -16,26 +16,24 @@ class EngancheTest extends TestCase
         $movil = $this->getMovil();
         $this->post('/eventos', [
             'evento_tipo_id' => self::ENGANCHE,
-            'movil_id' => $movil->movil_id,
-            'posicion_id' => 1,
             'cliente_id' => $movil->cliente_id,
+            'movil_id' => $movil->movil_id,
             'dominio' => 'ABC123',
-            'timestamp' => 123456,
+            'timestamp' => 1485196076,
         ]);
         $this->assertResponseStatus(201);
     }
 
-    public function testDesngancheAviso()
+    public function testDesengancheAviso()
     {
         $this->withoutEvents();
         $movil = $this->getMovil();
         $this->post('/eventos', [
             'evento_tipo_id' => self::DESENGANCHE,
-            'movil_id' => $movil->movil_id,
-            'posicion_id' => 1,
             'cliente_id' => $movil->cliente_id,
+            'movil_id' => $movil->movil_id,
             'dominio' => 'ABC123',
-            'timestamp' => 123456,
+            'timestamp' => 1485196096,
         ]);
         $this->assertResponseStatus(201);
     }
