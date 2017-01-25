@@ -8,7 +8,6 @@ use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
 use App\ReenvioMovil;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Redis;
 use App\Events\ReenvioCreated;
 
 class ReenvioController extends Controller

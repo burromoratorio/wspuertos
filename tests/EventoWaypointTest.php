@@ -1,7 +1,6 @@
 <?php
 
 use Laravel\Lumen\Testing\DatabaseTransactions;
-use App\Movil;
 
 class EventoWaypointTest extends TestCase
 {

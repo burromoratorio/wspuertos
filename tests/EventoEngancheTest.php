@@ -2,10 +2,6 @@
 
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-use App\AvisoCliente;
-use App\AvisoConfiguracion;
-use App\Destinatario;
-
 class EventoEngancheTest extends TestCase
 {
     use DatabaseTransactions;
