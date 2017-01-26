@@ -45,6 +45,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return response($e, 500);
+        return response($e->getMessage(), 500);
     }
 }

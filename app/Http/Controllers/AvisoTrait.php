@@ -154,7 +154,7 @@ trait AvisoTrait
         }
 
         $keyword = $evento_tipo_id == self::$AVISO_DESENGANCHE ? "des" : "";
-        $subject = "SIAC - $dominio ${keyword}enganchó";
+        $subject = "SIAC - $dominio ${keyword}engancha";
         $body = "Hora de ${keyword}enganche: ".Carbon::createFromTimestamp($timestamp-3*60*60)->format('d/m/Y H:i:s');
         return compact('subject', 'body');
     }
