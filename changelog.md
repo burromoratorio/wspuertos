@@ -51,3 +51,8 @@ d1aecae Soporta varias combinaciones cliente_id-aviso_tipo_id
 64af31d Agrego controlador para destinatarios
 479918a Agrego rutas para el modelo destinatarios
 2a373da Modifico modelo
+
+### v0.2.1 (26/01/2017)
+
+513ddbe Reduce tamaño de error devuelto
+001ec2f Quita acento del subject del mail
