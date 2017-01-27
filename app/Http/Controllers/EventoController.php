@@ -117,21 +117,16 @@ class EventoController extends Controller
         $this->timestamp = $request->input('timestamp');
 
         if ($this->evento_tipo_id == self::EVENTO_ENTRADA_WAYPOINT ||
-            $this->evento_tipo_id == self::EVENTO_SALIDA_WAYPOINT)
-        {
+            $this->evento_tipo_id == self::EVENTO_SALIDA_WAYPOINT) {
             $entity_id = $request->input('waypoint_id');
             $eventable_type = 'App\Waypoint';
             $adviseMethod = 'makeMailWaypoint';
-        }
-        else if ($this->evento_tipo_id == self::EVENTO_DESENGANCHE ||
-                 $this->evento_tipo_id == self::EVENTO_ENGANCHE)
-        {
+        } else if ($this->evento_tipo_id == self::EVENTO_DESENGANCHE ||
+                 $this->evento_tipo_id == self::EVENTO_ENGANCHE) {
             $entity_id = self::FAKE_POSICION_ID;
             $eventable_type = 'App\Posicion';
             $adviseMethod = 'makeMailDesenganche';
-        }
-        else
-        {
+        } else {
             throw new \Exception("Evento desconocido");
         }
 
@@ -142,8 +137,7 @@ class EventoController extends Controller
             'eventable_type' => $eventable_type,
         ]);
 
-        if ($this->isAdvisable())
-        {
+        if ($this->isAdvisable()) {
             $this->advise($entity_id, $adviseMethod);
         }
 
