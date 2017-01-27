@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Aviso;
-use App\Events\AvisoCreated;
 
 class AvisoController extends Controller
 {
@@ -21,6 +20,10 @@ class AvisoController extends Controller
     }
 
     public function update(Request $request, $id) {
+        $this->validate($request, [
+            'estado_envio_id' => 'required|numeric',
+        ]);
+
         $aviso = Aviso::findOrFail($id);
         $estado = $request->input('estado_envio_id');
         if ($estado == self::$ESTADO_PENDIENTE) {

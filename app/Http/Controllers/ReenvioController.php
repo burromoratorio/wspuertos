@@ -24,7 +24,10 @@ class ReenvioController extends Controller
     }
 
     public function store(Request $request) {
-        //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
+        $this->validate($request, [
+            'movil_id' => 'required|numeric',
+        ]);
+
         ReenvioMovil::
             where([
                 ['movil_id', $request->input('movil_id')],
@@ -114,6 +117,10 @@ class ReenvioController extends Controller
     }
 
     public function update(Request $request, $id) {
+        $this->validate($request, [
+            'estado_envio_id' => 'required|numeric',
+        ]);
+
         $reenvioPosicionHost = ReenvioPosicionHost::findOrFail($id);
         $estado = $request->input('estado_envio_id');
         if ($estado == static::ESTADO_PENDIENTE) {
