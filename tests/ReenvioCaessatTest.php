@@ -7,6 +7,10 @@ class ReenvioCaessatTest extends TestCase
 {
     use DatabaseTransactions;
 
+    const ESTADO_PENDIENTE = 1;
+    const ESTADO_ENVIADO = 2;
+    const ESTADO_FALLIDO = 3;
+
     public function testReenvioTcp()
     {
         Redis::shouldReceive('publish')->once();
@@ -54,5 +58,50 @@ class ReenvioCaessatTest extends TestCase
         ]);
 
         $this->assertResponseStatus(201);
+    }
+
+    public function testUpdateReenvioPendiente()
+    {
+        Redis::shouldReceive('publish')->once();
+        $reenvio_posicion_host_id = factory(App\ReenvioPosicionHost::class)->create()->id;
+
+        $this->patch('/reenvios/'.$reenvio_posicion_host_id, [
+            'estado_envio_id' => static::ESTADO_PENDIENTE,
+        ]);
+        $this->seeInDatabase('reenvios_posiciones_hosts', [
+            'id' => $reenvio_posicion_host_id,
+            'estado_envio_id' => static::ESTADO_PENDIENTE,
+        ]);
+        $this->assertResponseStatus(200);
+    }
+
+    public function testUpdateReenvioEnviado()
+    {
+        Redis::shouldReceive('publish')->never();
+        $reenvio_posicion_host_id = factory(App\ReenvioPosicionHost::class)->create()->id;
+
+        $this->patch('/reenvios/'.$reenvio_posicion_host_id, [
+            'estado_envio_id' => static::ESTADO_ENVIADO,
+        ]);
+        $this->seeInDatabase('reenvios_posiciones_hosts', [
+            'id' => $reenvio_posicion_host_id,
+            'estado_envio_id' => static::ESTADO_ENVIADO,
+        ]);
+        $this->assertResponseStatus(200);
+    }
+
+    public function testUpdateReenvioFallido()
+    {
+        Redis::shouldReceive('publish')->never();
+        $reenvio_posicion_host_id = factory(App\ReenvioPosicionHost::class)->create()->id;
+
+        $this->patch('/reenvios/'.$reenvio_posicion_host_id, [
+            'estado_envio_id' => static::ESTADO_FALLIDO,
+        ]);
+        $this->seeInDatabase('reenvios_posiciones_hosts', [
+            'id' => $reenvio_posicion_host_id,
+            'estado_envio_id' => static::ESTADO_FALLIDO,
+        ]);
+        $this->assertResponseStatus(200);
     }
 }
