@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Aviso;
+use App\Events\AvisoCreated;
 
 class AvisoController extends Controller
 {
@@ -23,12 +24,8 @@ class AvisoController extends Controller
         $aviso = Aviso::findOrFail($id);
         $estado = $request->input('estado_envio_id');
         if ($estado == self::$ESTADO_PENDIENTE) {
-            // TODO: terminar reintentos
-            /*$aviso_id = $aviso->id;
-            $subject = $aviso->subject;
-            $body = $aviso->body;
-            $addresses = ;
-            Redis::publish('mails', json_encode(compact('aviso_id', 'subject', 'body', 'addresses')));*/
+            list($subject, $body) = explode(";", $aviso->aviso);
+            $this->fireEvent($subject, $body, $aviso->aviso_cliente_id, $aviso->id);
         }
         $aviso->estado_envio_id = $estado;
         $aviso->save();

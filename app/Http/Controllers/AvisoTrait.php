@@ -85,7 +85,7 @@ trait AvisoTrait
     }
 
     /**
-     * Envía el aviso al cliente
+     * Crea el aviso y dispara evento para notificar al cliente
      *
      * @param  string  $subject
      * @param  string  $body
@@ -95,6 +95,19 @@ trait AvisoTrait
     protected function notify($subject, $body, $aviso_cliente_id) {
         $subject = str_replace(";", " ", $subject); // evita que se rompa la cadena a enviar
         $aviso_id = $this->createAviso("$subject;$body", $aviso_cliente_id);
+        $this->fireEvent($subject, $body, $aviso_cliente_id, $aviso_id);
+    }
+
+    /**
+     * Dispara evento para notificar al cliente
+     *
+     * @param  string  $subject
+     * @param  string  $body
+     * @param  int  $aviso_cliente_id
+     * @param  int  $aviso_id
+     * @return void
+     */
+    protected function fireEvent($subject, $body, $aviso_cliente_id, $aviso_id) {
         $addresses = AvisoDestinatario
             ::where('aviso_cliente_id', $aviso_cliente_id)
             ->with('destinatario')
