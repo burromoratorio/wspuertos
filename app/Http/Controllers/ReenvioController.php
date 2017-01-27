@@ -9,6 +9,7 @@ use App\ReenvioPosicionHost;
 use App\ReenvioMovil;
 use Carbon\Carbon;
 use App\Events\ReenvioCreated;
+use DB;
 
 class ReenvioController extends Controller
 {
@@ -28,38 +29,40 @@ class ReenvioController extends Controller
             'movil_id' => 'required|numeric',
         ]);
 
-        ReenvioMovil::
-            where([
-                ['movil_id', $request->input('movil_id')],
-                ['activo', 1],
-            ])
-            ->each(function ($reenvio_movil) use ($request) {
+        DB::transaction(function () use ($request) {
+            ReenvioMovil::
+                where([
+                    ['movil_id', $request->input('movil_id')],
+                    ['activo', 1],
+                ])
+                ->each(function ($reenvio_movil) use ($request) {
 
-                $cadena = $reenvio_movil->modo == static::MODE_CAESSAT ?
-                    $this->mkCaessatString($request->all()) :
-                    $this->mkSoapString($request->all());
+                    $cadena = $reenvio_movil->modo == static::MODE_CAESSAT ?
+                        $this->mkCaessatString($request->all()) :
+                        $this->mkSoapString($request->all());
 
-                $reenvioPosicion = ReenvioPosicion::create([
-                    'movil_id' => $reenvio_movil->movil_id,
-                    'cadena' => $cadena,
-                ]);
+                    $reenvioPosicion = ReenvioPosicion::create([
+                        'movil_id' => $reenvio_movil->movil_id,
+                        'cadena' => $cadena,
+                    ]);
 
-                $reenvioPosicionHost = ReenvioPosicionHost::create([
-                    'reenvio_posicion_id' => $reenvioPosicion->id,
-                    'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
-                    'estado_envio_id' => static::ESTADO_PENDIENTE,
-                ]);
-                $reenvioHost = $reenvioPosicionHost->reenvio_host;
+                    $reenvioPosicionHost = ReenvioPosicionHost::create([
+                        'reenvio_posicion_id' => $reenvioPosicion->id,
+                        'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
+                        'estado_envio_id' => static::ESTADO_PENDIENTE,
+                    ]);
+                    $reenvioHost = $reenvioPosicionHost->reenvio_host;
 
-                event(new ReenvioCreated(
-                    $reenvioPosicionHost->id,
-                    $reenvioHost->destino,
-                    $reenvioHost->puerto,
-                    $reenvioPosicion->cadena,
-                    $reenvioHost->protocolo,
-                    $reenvio_movil->modo
-                ));
-            });
+                    event(new ReenvioCreated(
+                        $reenvioPosicionHost->id,
+                        $reenvioHost->destino,
+                        $reenvioHost->puerto,
+                        $reenvioPosicion->cadena,
+                        $reenvioHost->protocolo,
+                        $reenvio_movil->modo
+                    ));
+                });
+        }, 3);
 
         return response()->json("OK\n", 201);
     }

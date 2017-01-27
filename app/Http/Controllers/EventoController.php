@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Evento;
+use DB;
 
 class EventoController extends Controller
 {
@@ -130,16 +131,18 @@ class EventoController extends Controller
             throw new \Exception("Evento desconocido");
         }
 
-        Evento::create([
-            'evento_tipo_id' => $this->evento_tipo_id,
-            'movil_id' => $this->movil_id,
-            'eventable_id' => $entity_id,
-            'eventable_type' => $eventable_type,
-        ]);
+        DB::transaction(function () use ($entity_id, $eventable_type, $adviseMethod) {
+            Evento::create([
+                'evento_tipo_id' => $this->evento_tipo_id,
+                'movil_id' => $this->movil_id,
+                'eventable_id' => $entity_id,
+                'eventable_type' => $eventable_type,
+            ]);
 
-        if ($this->isAdvisable()) {
-            $this->advise($entity_id, $adviseMethod);
-        }
+            if ($this->isAdvisable()) {
+                $this->advise($entity_id, $adviseMethod);
+            }
+        }, 3);
 
         return response()->json("OK", 201);
     }
