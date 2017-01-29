@@ -33,9 +33,9 @@ class SendPositionToPlatform
      * @return void
      */
     protected function publishToRedis($id, $host, $port, $msg, $proto, $mode) {
-        if ($mode = static::MODE_CAESSAT) {
+        if ($mode == static::MODE_CAESSAT) {
             $channel = $proto == 'TCP' ? 'caessat' : 'caessat-udp';
-        } else if ($mode = static::MODE_PRODTECH) {
+        } else if ($mode == static::MODE_PRODTECH) {
             $channel = 'prodtech';
         } else {
             throw new \Exception("Modo de envío no soportado: ".$mode);
