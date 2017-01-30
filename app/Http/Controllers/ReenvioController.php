@@ -20,6 +20,18 @@ class ReenvioController extends Controller
     const ESTADO_ENVIADO = 2;
     const ESTADO_FALLIDO = 3;
 
+    public $rumbosProdtech = [
+        0, // indefinido
+        1, // Norte: (siac) 1
+        6, // NorthWest: (siac) 2
+        4, // West: (siac) 3
+        8, // SouthWest: (siac) 4
+        2, // South: (siac) 5
+        7, // SouthEast: (siac) 6
+        3, // East: (siac) 7
+        5  // NorthEast: (siac) 8
+    ];
+
     public function index(Request $request) {
         return ReenvioPosicion::take(30)->get();
     }
@@ -111,7 +123,7 @@ class ReenvioController extends Controller
             "temp_refrigerado" => "0,0",
             "antena" => $fields['antena'],
             "location_name" => "",
-            "direccion" => $fields['sentido_id'], // TODO: mapear
+            "direccion" => $this->rumbosProdtech[$fields['sentido_id']],
             "analog3" => "",
             "analog4" => "",
             "analog5" => "",
