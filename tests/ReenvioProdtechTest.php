@@ -27,7 +27,7 @@ class ReenvioProdtechTest extends TestCase
             'temperatura1' => 0,
             'temperatura2' => 0,
             'temperatura3' => 0,
-            'sentido_id' => 1,
+            'sentido_id' => 5, // debe mapear a 2
             'antena' => 7230,
         ]);
         $this->assertResponseStatus(201);
