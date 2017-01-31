@@ -13,13 +13,28 @@ use DB;
 
 class ReenvioController extends Controller
 {
+    /**
+     * Modos de envío soportados
+     *
+     * @var
+     */
     const MODE_CAESSAT='caessat';
     const MODE_PRODTECH='prodtech'; // soap
 
+    /**
+     * Estados del envío
+     *
+     * @var
+     */
     const ESTADO_PENDIENTE = 1;
     const ESTADO_ENVIADO = 2;
     const ESTADO_FALLIDO = 3;
 
+    /**
+     * Mapa de ids de rumbos entre SIAC y Prodtech
+     *
+     * @var
+     */
     public $rumbosProdtech = [
         0, // indefinido
         1, // Norte: (siac) 1
@@ -32,10 +47,23 @@ class ReenvioController extends Controller
         5  // NorthEast: (siac) 8
     ];
 
+    /**
+     * Lista los reenvíos
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request) {
         return ReenvioPosicion::take(30)->get();
     }
 
+    /**
+     * Guarda el reenvío (1 ReenvioPosicion y N ReenvioPosicionHost) en BBDD,
+     * y dispara evento para que se comunique a los deamons de envíos, mediante Redis
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @throws Exception
+     */
     public function store(Request $request) {
         $this->validate($request, [
             'movil_id' => 'required|numeric',
@@ -79,12 +107,27 @@ class ReenvioController extends Controller
         return response()->json("OK\n", 201);
     }
 
+    /**
+     * Chequea que el valor $field de $name sea exactamente $length bytes de largo
+     *
+     * @param  string  $name
+     * @param  string  $field
+     * @param  int  $length
+     * @return string
+     * @throws Exception
+     */
     private function checkExactLength($name, $field, $length) {
         if (strlen($field) != $length)
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
     }
 
+    /**
+     * Arma cadena de envío según protocolo CAESSAT
+     *
+     * @param  array  $fields
+     * @return string
+     */
     private function mkCaessatString(array $fields) {
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
         $cadena =
@@ -104,12 +147,27 @@ class ReenvioController extends Controller
         return $cadena;
     }
 
+    /**
+     * Chequea que el valor $field de $name no supere los $length bytes
+     *
+     * @param  string  $name
+     * @param  string  $field
+     * @param  int  $length
+     * @return string
+     * @throws Exception
+     */
     private function checkMaxLength($name, $field, $length) {
         if (strlen($field) > $length)
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
     }
 
+    /**
+     * Arma JSON de envío según especificación WSDL de Prodtech
+     *
+     * @param  array  $fields
+     * @return string
+     */
     private function mkSoapString(array $fields) {
         return json_encode([
             "user" => config('app.prodtech_user'),
@@ -131,6 +189,13 @@ class ReenvioController extends Controller
         ]);
     }
 
+    /**
+     * Actualiza estado de reenvio, y si es necesario, dispara evento para volver a reintentar el envío
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return string
+     */
     public function update(Request $request, $id) {
         $this->validate($request, [
             'estado_envio_id' => 'required|numeric',
