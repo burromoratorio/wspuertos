@@ -71,13 +71,14 @@ class ReenvioController extends Controller
 
         DB::transaction(function () use ($request) {
             ReenvioMovil::
-                where([
+                with('reenvio_host')
+                ->where([
                     ['movil_id', $request->input('movil_id')],
                     ['activo', 1],
                 ])
                 ->each(function ($reenvio_movil) use ($request) {
 
-                    $cadena = $reenvio_movil->modo == static::MODE_CAESSAT ?
+                    $cadena = $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT ?
                         $this->mkCaessatString($request->all()) :
                         $this->mkSoapString($request->all());
 
@@ -99,7 +100,7 @@ class ReenvioController extends Controller
                         $reenvioHost->puerto,
                         $reenvioPosicion->cadena,
                         $reenvioHost->protocolo,
-                        $reenvio_movil->modo
+                        $reenvio_movil->reenvio_host->modo
                     ));
                 });
         }, 3);

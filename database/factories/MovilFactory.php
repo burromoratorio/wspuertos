@@ -119,6 +119,7 @@ $factory->state(App\ReenvioMovil::class, 'prodtech', function ($faker) {
         'reenvio_host_id' => function () {
             return factory(App\ReenvioHost::class)->create([
                 'destino' => 'http://localhost:8000/gps.asmx?wsdl',
+                'modo' => 'prodtech',
             ])->id;
         },
     ];
