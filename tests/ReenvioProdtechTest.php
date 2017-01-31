@@ -10,7 +10,7 @@ class ReenvioProdtechTest extends TestCase
     public function testReenvioSoap()
     {
         Redis::shouldReceive('publish')->once();
-        $reenvio_movil = factory(App\ReenvioMovil::class)->create([
+        $reenvio_movil = factory(App\ReenvioMovil::class)->states('prodtech')->create([
             'modo' => 'prodtech',
         ]);
 
