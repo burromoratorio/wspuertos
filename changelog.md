@@ -56,3 +56,21 @@ d1aecae Soporta varias combinaciones cliente_id-aviso_tipo_id
 
 513ddbe Reduce tamaño de error devuelto
 001ec2f Quita acento del subject del mail
+
+### v0.3.0 (31/01/2017)
+
+6302a00 Actualiza script de chequeo de errores para Lumen
+1f3bd2e Actualiza prueba para que lea campo modo de reenvios_hosts
+eb964cb Soporta campo modo en reenvios_hosts
+295ad6d Agrega docblocks para mejorar lectura
+4be36b2 Mejora test de prodtech
+bf82e7f Agrega nuevo estado al factory de ReenvioMovil
+ed9aa15 Mejora prueba para forzar mapeo de rumbo
+ca93963 Agrega mapa de rumbos para prodtech
+c180bb9 Corrige bug asignación en comparación
+4662403 Agrega transacciones con reintentos por deadlocks
+d57ef25 Fix standard PSR-2
+4e206b0 Agrega pruebas de actualización de estado de reenvíos y avisos
+2219445 Agrega más factories para pruebas
+bb3bb69 Agrega validación
+08737b8 Implementa reenvío de aviso
