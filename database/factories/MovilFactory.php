@@ -114,6 +114,16 @@ $factory->state(App\ReenvioMovil::class, 'udp', function ($faker) {
     ];
 });
 
+$factory->state(App\ReenvioMovil::class, 'prodtech', function ($faker) {
+    return [
+        'reenvio_host_id' => function () {
+            return factory(App\ReenvioHost::class)->create([
+                'destino' => 'http://localhost:8000/gps.asmx?wsdl',
+            ])->id;
+        },
+    ];
+});
+
 $factory->define(App\ReenvioPosicion::class, function (Faker\Generator $faker) {
     return [
         'movil_id' => 1,
