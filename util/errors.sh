@@ -18,4 +18,4 @@ while getopts "yh" option; do
     esac
 done
 
-grep --text --no-filename -E "production.ERROR" /var/www/wspuertos/storage/logs/laravel-${DAY:-$(date +%Y-%m-%d)}*.log 2> /dev/null
+grep --text --no-filename -E "lumen.ERROR" /var/www/wspuertos/storage/logs/lumen.log 2> /dev/null
