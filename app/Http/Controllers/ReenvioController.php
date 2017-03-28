@@ -29,7 +29,7 @@ public function store(Request $request) {
         foreach($hostMovil as $host){
           Log::error($host->destino);
 
-          if($host->destino=="200.55.7.172"){
+          if($host->destino=="200.55.7.172" || $host->destino=="216.224.163.116"){
             $cadena=$this->mkCaessatString17($request->all());
           }else{
             $cadena=$this->mkCaessatString($request->all());
