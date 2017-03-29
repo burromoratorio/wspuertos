@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 Use Log;
 use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
+<<<<<<< HEAD
 use App\ReenvioMovil;
 use Carbon\Carbon;
 use App\Events\ReenvioCreated;
 use DB;
 
+=======
+use DB;
+use Carbon\Carbon;
+Use Log;
+use Illuminate\Support\Facades\Redis;
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
 class ReenvioController extends Controller
 {
     /**
@@ -55,6 +62,7 @@ class ReenvioController extends Controller
     public function index(Request $request) {
         return ReenvioPosicion::take(30)->get();
     }
+<<<<<<< HEAD
 
     /**
      * Guarda el reenvío (1 ReenvioPosicion y N ReenvioPosicionHost) en BBDD,
@@ -115,6 +123,46 @@ class ReenvioController extends Controller
 
         return response()->json("OK\n", 201);
     }
+=======
+/*test con desicion de formacion de cadena*/
+public function store(Request $request) {
+        //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610","velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
+
+        $hostMovil = DB::table('reenvios_moviles')->where('movil_id',$request->input('movil_id'))
+                                                  ->where('activo','1')
+                                                  ->join('reenvios_hosts','reenvios_moviles.reenvio_host_id','reenvios_hosts.id')->get();
+        foreach($hostMovil as $host){
+          Log::error($host->destino);
+
+          if($host->destino=="200.55.7.172" || $host->destino=="216.224.163.116"){
+            $cadena=$this->mkCaessatString17($request->all());
+          }else{
+            $cadena=$this->mkCaessatString($request->all());
+          }
+
+          $reenvioPosicion = ReenvioPosicion::create([
+            'movil_id' => $request->input('movil_id'),
+            'cadena'=>$cadena
+          ]);
+
+          $reenvioPosicionHost = ReenvioPosicionHost::create([
+                    'reenvio_posicion_id' => $reenvioPosicion->id,
+                    'reenvio_host_id' => $host->reenvio_host_id,
+                    'estado_envio_id' => static::ESTADO_PENDIENTE,
+          ]);
+          $this->publishToRedis(
+                    $reenvioPosicionHost->id,
+                    $host->destino,
+                    $host->puerto,
+                    $reenvioPosicion->cadena,
+                    $host->protocolo
+                );
+ 
+
+        }
+        return "OK\n";
+}
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
 
     /**
      * Chequea que el valor $field de $name sea exactamente $length bytes de largo
@@ -130,6 +178,7 @@ class ReenvioController extends Controller
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
     }
+<<<<<<< HEAD
 
     /**
      * Arma cadena de envío según protocolo CAESSAT
@@ -137,6 +186,9 @@ class ReenvioController extends Controller
      * @param  array  $fields
      * @return string
      */
+=======
+    
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
     private function mkCaessatString(array $fields) {
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
         $cadena =
@@ -153,13 +205,18 @@ class ReenvioController extends Controller
             $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
             $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
             "|";
+<<<<<<< HEAD
 Log::error($cadena);
+=======
+ 	Log::error($cadena);           
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
         return $cadena;
     }
     private function mkCaessatString17(array $fields) {
         //ABC123,010114210000,-12.34567,+012.34567,80,180,005,100850000,-2,4,-1
         $cadena =
             $fields['patente'].",".
+<<<<<<< HEAD
             $this->checkExactLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).",".
             $this->checkExactLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).",".
             $this->checkExactLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).",".
@@ -170,6 +227,18 @@ Log::error($cadena);
             $this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).",".
             $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).",".
             $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3)."|";
+=======
+            $this->checkLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).",".
+            $this->checkLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).",".
+            $this->checkLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).",".
+            $this->checkLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).",".
+            $this->checkLength("sentido", sprintf("%03d", $fields['sentido']), 3).",".
+            $this->checkLength("evento", sprintf("%02d", $fields['evento']), 2).",".
+            "0,".
+            $this->checkLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).",".
+            $this->checkLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).",".
+            $this->checkLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3)."|";
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
  	Log::error($cadena);           
         return $cadena;
     }
@@ -245,4 +314,16 @@ Log::error($cadena);
         $reenvioPosicionHost->save();
         return "Update OK";
     }
+<<<<<<< HEAD
+=======
+
+    protected function publishToRedis($id, $host, $port, $msg,$proto) {
+        if($proto=='TCP'){
+            Log::error("publicando"); 
+	    Redis::publish('caessat', json_encode(compact('id', 'host', 'port', 'msg','proto')));
+	}else{
+	    Redis::publish('caessat-udp',json_encode(compact('id','host','port','msg','proto')) );
+	}
+    }
+>>>>>>> 6967b01c0de95b5e018c99613cd9c9b262e19497
 }
