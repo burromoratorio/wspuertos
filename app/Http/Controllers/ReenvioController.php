@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+Use Log;
 use App\ReenvioPosicion;
 use App\ReenvioPosicionHost;
 use App\ReenvioMovil;
@@ -78,9 +78,17 @@ class ReenvioController extends Controller
                 ])
                 ->each(function ($reenvio_movil) use ($request) {
 
-                    $cadena = $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT ?
-                        $this->mkCaessatString($request->all()) :
-                        $this->mkSoapString($request->all());
+                   if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
+                       $hostDestino=$reenvio_movil->reenvio_host->destino; 
+                       if($hostDestino=="200.55.7.172" || $hostDestino=="216.224.163.116"){
+           		 $cadena=$this->mkCaessatString17($request->all());
+          	       }else{
+            		$cadena=$this->mkCaessatString($request->all());
+                       }
+                   }else{
+                        $cadena=$this->mkSoapString($request->all()); 
+
+                   } 
 
                     $reenvioPosicion = ReenvioPosicion::create([
                         'movil_id' => $reenvio_movil->movil_id,
@@ -145,9 +153,26 @@ class ReenvioController extends Controller
             $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
             $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
             "|";
+Log::error($cadena);
         return $cadena;
     }
-
+    private function mkCaessatString17(array $fields) {
+        //ABC123,010114210000,-12.34567,+012.34567,80,180,005,100850000,-2,4,-1
+        $cadena =
+            $fields['patente'].",".
+            $this->checkExactLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).",".
+            $this->checkExactLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).",".
+            $this->checkExactLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).",".
+            $this->checkExactLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).",".
+            $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).",".
+            $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2).",".
+            "0,".
+            $this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).",".
+            $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).",".
+            $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3)."|";
+ 	Log::error($cadena);           
+        return $cadena;
+    }
     /**
      * Chequea que el valor $field de $name no supere los $length bytes
      *
