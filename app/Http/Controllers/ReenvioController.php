@@ -149,12 +149,11 @@ class ReenvioController extends Controller
             $this->checkExactLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).
             $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).
             $this->checkExactLength("posGpsValida", $fields['posGpsValida'], 1).
-            $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2).
-            $this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).
-            $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).
-            $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3).
-            "|";
- 	Log::error($cadena);           
+            $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2);
+        $cadena.=(isset($fields['temperatura1']) && $fields['temperatura1']!='0' )?$this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3):"+99";
+        $cadena.=(isset($fields['temperatura2']) && $fields['temperatura2']!='0' )?$this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3):"+99";
+        $cadena.=(isset($fields['temperatura3']) && $fields['temperatura3']!='0' )?$this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3):"+99";
+        $cadena.="|";
         return $cadena;
     }
     private function mkCaessatString17(array $fields) {
@@ -167,11 +166,11 @@ class ReenvioController extends Controller
             $this->checkExactLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).",".
             $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).",".
             $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2).",".
-            "0,".
-            $this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3).",".
-            $this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3).",".
-            $this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3)."|";
- 	Log::error($cadena);           
+            "0";
+	$cadena.=(isset($fields['temperatura1']) && $fields['temperatura1']!='0' )?",".$this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3):"+99";
+	$cadena.=(isset($fields['temperatura2']) && $fields['temperatura2']!='0' )?",".$this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3):"+99";
+	$cadena.=(isset($fields['temperatura3']) && $fields['temperatura3']!='0' )?",".$this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3):"+99";
+        $cadena.="|";
         return $cadena;
     }
     /**
