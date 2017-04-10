@@ -80,7 +80,7 @@ class ReenvioController extends Controller
 
                    if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
                        $hostDestino=$reenvio_movil->reenvio_host->destino; 
-                       if($hostDestino=="200.55.7.172" || $hostDestino=="216.224.163.116"){
+                       if($hostDestino=="200.55.7.172" || $hostDestino=="216.224.163.116" || $hostDestino=="174.143.201.195"){
            		 $cadena=$this->mkCaessatString17($request->all());
           	       }else{
             		$cadena=$this->mkCaessatString($request->all());
@@ -167,9 +167,9 @@ class ReenvioController extends Controller
             $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).",".
             $this->checkExactLength("evento", sprintf("%02d", $fields['evento']), 2).",".
             "0";
-	$cadena.=(isset($fields['temperatura1']) && $fields['temperatura1']!='0' )?",".$this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3):"+99";
-	$cadena.=(isset($fields['temperatura2']) && $fields['temperatura2']!='0' )?",".$this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3):"+99";
-	$cadena.=(isset($fields['temperatura3']) && $fields['temperatura3']!='0' )?",".$this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3):"+99";
+	$cadena.=(isset($fields['temperatura1']) && $fields['temperatura1']!='0' )?",".$this->checkExactLength("temperatura1", sprintf("%+03d", $fields['temperatura1'] > 99 ? 99 : $fields['temperatura1']), 3):",+99";
+	$cadena.=(isset($fields['temperatura2']) && $fields['temperatura2']!='0' )?",".$this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3):",+99";
+	$cadena.=(isset($fields['temperatura3']) && $fields['temperatura3']!='0' )?",".$this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3):",+99";
         $cadena.="|";
         return $cadena;
     }
