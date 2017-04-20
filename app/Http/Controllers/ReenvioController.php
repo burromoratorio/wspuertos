@@ -88,21 +88,13 @@ class ReenvioController extends Controller
                           }
                            
                        }
-                       /*if($hostDestino=="200.55.7.172" || $hostDestino=="216.224.163.116" || $hostDestino=="174.143.201.195" || $hostDestino=="190.210.182.161"){
-           		 $cadena=$this->mkCaessatString17($request->all());
-          	       }else{
-            		$cadena=$this->mkCaessatString($request->all());
-                       }*/
                    }else{
                         $cadena=$this->mkSoapString($request->all()); 
-
                    } 
-
                     $reenvioPosicion = ReenvioPosicion::create([
                         'movil_id' => $reenvio_movil->movil_id,
                         'cadena' => $cadena,
                     ]);
-
                     $reenvioPosicionHost = ReenvioPosicionHost::create([
                         'reenvio_posicion_id' => $reenvioPosicion->id,
                         'reenvio_host_id' => $reenvio_movil->reenvio_host_id,
