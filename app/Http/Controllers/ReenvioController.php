@@ -80,7 +80,7 @@ class ReenvioController extends Controller
 
                    if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
                        $hostDestino=$reenvio_movil->reenvio_host->destino; 
-                       $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"200.89.142.59","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172");
+                       $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"200.89.142.59","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172", "logicTracker"=>"190.104.220.250","sglobal"=>"190.210.189.109");
                        $cadena=$this->mkCaessatString($request->all());
                        foreach($hostWirtrack as $k => $v) {
                           if($hostDestino==$v){
