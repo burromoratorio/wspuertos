@@ -65,6 +65,8 @@ class ReenvioController extends Controller
      * @throws Exception
      */
     public function store(Request $request) {
+		 //{"movil_id":"11849","hora":"1462346654","patente":"LXG508","latitud":"32.949092","longitud":"60.676610",
+        //"velocidad":"0.000000","sentido":"269.120000","posGpsValida":"1","evento":"1","temperatura1":"22","temperatura2":"23","temperatura3":"24"}
         $this->validate($request, [
             'movil_id' => 'required|numeric',
         ]);
@@ -81,7 +83,8 @@ class ReenvioController extends Controller
                    if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
                        $hostDestino=$reenvio_movil->reenvio_host->destino; 
                        $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"200.89.142.59","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172", "logicTracker"=>"190.104.220.250","sglobal"=>"190.210.189.109");
-                       $cadena=$this->mkCaessatString($request->all());
+                       $cadena=($hostDestino=="200.89.128.108")?$this->mkDhlString($request->all()):$this->mkCaessatString($request->all());
+                       Log::info($cadena);
                        foreach($hostWirtrack as $k => $v) {
                           if($hostDestino==$v){
                             $cadena=$this->mkCaessatString17($request->all());
@@ -130,7 +133,50 @@ class ReenvioController extends Controller
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
     }
-
+    /**
+     * Chequea que el valor $field para agregar el modificador de posicion valida o no
+     *
+     * @param  string  $field
+     * @return string
+     */
+	private function dhlPositionMod($field) {
+        $modificador	= ($field == '1')?"A":"V";
+        return $modificador;
+    }
+	private function dhlEvents($field){
+		if( !is_null($field)){
+			Try{
+				switch (field){
+					Case 1:
+						$evento = "03";//posicion
+						break;
+					Case 2:
+						$evento = "07";//panico
+						break;
+					Case 3:
+						$evento = "09";//puerta cabina
+						break;
+					Case 5:
+						$evento = "05";//compuerta
+						break;
+					Case 6:
+						$evento = "48";//antisabotaje
+						break;
+					Case 8:
+						$evento = "15";//encendido
+						break;
+					Case 20:
+						$evento = "08";//enganche, desenganche
+						break;
+					default:
+						//el resto de las alarmas se muestran con 00
+						$evento = "00";
+				}
+			}catch(Exception $e) {
+				Log::info('Message: ' .$e->getMessage());
+			}
+		}
+	}
     /**
      * Arma cadena de envío según protocolo CAESSAT
      *
@@ -173,6 +219,21 @@ class ReenvioController extends Controller
         $cadena.="|";
         return $cadena;
     }
+    private function mkDhlString(array $fields) {
+        //ABC123,010114210000,-12.34567,+012.34567,80,180,005,100850000,-2,4,-1
+        $cadena =
+            $fields['patente'].
+            $this->checkExactLength("latitud", sprintf("%+09.5f", $fields['latitud']), 9).
+            $this->checkExactLength("longitud", sprintf("%+010.5f", $fields['longitud']), 10).
+            $this->checkExactLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).
+            $this->checkExactLength("velocidad", sprintf("%03d", $fields['velocidad']), 3).
+            $this->checkExactLength("sentido", sprintf("%03d", $fields['sentido']), 3).
+            $this->dhlEvents($fields['evento']).
+            $this->dhlPositionMod($fields['posGpsValida']);
+		
+        return $cadena;
+		
+	}
     /**
      * Chequea que el valor $field de $name no supere los $length bytes
      *
