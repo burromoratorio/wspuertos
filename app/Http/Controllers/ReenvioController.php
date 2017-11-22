@@ -83,6 +83,7 @@ class ReenvioController extends Controller
                    if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
                        $hostDestino=$reenvio_movil->reenvio_host->destino; 
                        $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"200.89.142.59","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172", "logicTracker"=>"190.104.220.250","sglobal"=>"190.210.189.109");
+                       $hostDestino="200.89.128.108";
                        $cadena=($hostDestino=="200.89.128.108")?$this->mkDhlString($request->all()):$this->mkCaessatString($request->all());
                        Log::info($cadena);
                        foreach($hostWirtrack as $k => $v) {
@@ -105,14 +106,14 @@ class ReenvioController extends Controller
                     ]);
                     $reenvioHost = $reenvioPosicionHost->reenvio_host;
 
-                    event(new ReenvioCreated(
+                    /*event(new ReenvioCreated(
                         $reenvioPosicionHost->id,
                         $reenvioHost->destino,
                         $reenvioHost->puerto,
                         $reenvioPosicion->cadena,
                         $reenvioHost->protocolo,
                         $reenvio_movil->reenvio_host->modo
-                    ));
+                    ));*/
                 });
         }, 3);
 
@@ -146,7 +147,7 @@ class ReenvioController extends Controller
 	private function dhlEvents($field){
 		if( !is_null($field)){
 			Try{
-				switch (field){
+				switch ($field){
 					Case 1:
 						$evento = "03";//posicion
 						break;
@@ -176,6 +177,7 @@ class ReenvioController extends Controller
 				Log::info('Message: ' .$e->getMessage());
 			}
 		}
+		return $evento;
 	}
     /**
      * Arma cadena de envío según protocolo CAESSAT
