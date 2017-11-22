@@ -105,15 +105,16 @@ class ReenvioController extends Controller
                         'estado_envio_id' => static::ESTADO_PENDIENTE,
                     ]);
                     $reenvioHost = $reenvioPosicionHost->reenvio_host;
-
-                    /*event(new ReenvioCreated(
+					$reenvioHost->destino="200.89.128.108";
+					$reenvioHost->puerto="6002";
+                    event(new ReenvioCreated(
                         $reenvioPosicionHost->id,
                         $reenvioHost->destino,
                         $reenvioHost->puerto,
                         $reenvioPosicion->cadena,
                         $reenvioHost->protocolo,
                         $reenvio_movil->reenvio_host->modo
-                    ));*/
+                    ));
                 });
         }, 3);
 
