@@ -108,6 +108,7 @@ class ReenvioController extends Controller
 					$reenvioHost->destino="200.89.128.108";
 					$reenvioHost->puerto="6002";
 					$reenvioHost->protocolo="UDP";
+					$reenvio_movil->reenvio_host->modo="caessat";
                     event(new ReenvioCreated(
                         $reenvioPosicionHost->id,
                         $reenvioHost->destino,
