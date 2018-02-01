@@ -24,7 +24,7 @@ class AvisoController extends Controller
 			$av[]	= $avi;
 
 		}
-        return response()->json($av,200,'Content-type'=> 'application/json; charset=utf-8',JSON_UNESCAPED_UNICODE);          
+        return response()->json($av,200,JSON_UNESCAPED_UNICODE);          
        
     }
 
