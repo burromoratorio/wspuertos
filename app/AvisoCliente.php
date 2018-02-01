@@ -10,4 +10,9 @@ class AvisoCliente extends Model
     protected $fillable = ['aviso_tipo_id', 'cliente_id'];
     protected $dateFormat = 'Y-m-d H:i:s';
     protected $dates = ['created_at','updated_at'];
+    
+    public function cliente(){
+        return $this->belongsTo('App\Cliente', 'cliente_id', 'cliente_id');//->select(['cliente_id', 'razon_social']);
+
+    }
 }
