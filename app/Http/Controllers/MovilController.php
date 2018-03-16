@@ -19,7 +19,7 @@ class MovilController extends Controller
         return Movil::select('moviles.movil_id', 'moviles.alias', 'moviles.dominio')
                     ->where('moviles.cliente_id', $id)
                     ->orWhere('moviles.fletero_id', $id)
-                    ->orderBy('moviles.dominio')
+                    ->orderBy('moviles.alias')
                     ->get();
 
     }
