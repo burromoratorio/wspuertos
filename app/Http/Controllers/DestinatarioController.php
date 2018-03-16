@@ -36,7 +36,7 @@ class DestinatarioController extends Controller
 
         $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|numeric',
-            'mail'       => 'required|email|unique:destinatarios,mail',
+            'mail'       => 'required|email',
         ]);
 
         if ($validator->fails()) {
