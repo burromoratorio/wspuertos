@@ -133,6 +133,14 @@ class ReenvioController extends Controller
             throw new \Exception("Longitud incorrecta del campo: ".$name." - ".$field);
         return $field;
     }
+    private function patenteAval($patente){
+		$maxFor		= 7-strlen($patente);	
+		$espacios		= "";
+		for($i=0;$i<$maxFor;$i++){
+			$espacios.=" ";
+		}
+		return $patente.$espacios;
+	}
     /**
      * Chequea que el valor $field para agregar el modificador de posicion valida o no
      *
