@@ -82,7 +82,7 @@ class ReenvioController extends Controller
 
                    if( $reenvio_movil->reenvio_host->modo == static::MODE_CAESSAT  ){
                        $hostDestino = $reenvio_movil->reenvio_host->destino; 
-                       $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"190.210.200.196","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172", "logicTracker"=>"190.104.220.250","sglobal"=>"190.210.189.109","unisolution"=>"190.216.57.166","unisolutionv2"=>"200.69.211.177","linkcargas"=>"168.194.207.130","newSan"=>"200.89.177.100","hawk"=>"200.45.113.149");
+                       $hostWirtrack= array("arm"=>"190.210.182.161","arm2"=>"190.210.200.196","wirsolut"=>"174.143.201.195","wirsolut2"=>"216.224.163.116","donp"=>"200.55.7.172", "logicTracker"=>"190.104.220.250","sglobal"=>"190.210.189.109","unisolution"=>"190.216.57.166","unisolutionv2"=>"200.69.211.177","linkcargas"=>"168.194.207.130","newSan"=>"200.89.177.100");
                        $hostDhl		= "200.89.128.108";
                        //$cadena		= ($hostDestino==$hostDhl)?$this->mkDhlString($request->all()):$this->mkCaessatString($request->all());
                        $cadena		= ($hostDestino==$hostDhl)?$this->mkDhlString($request->all()):$this->mkCaessatString($request->all(),$hostDestino);
@@ -195,7 +195,8 @@ class ReenvioController extends Controller
     
     private function mkCaessatString(array $fields,$hostDestino) {
         //PC251210104844HRA450-34.70557-058.49464018360101+00+00+00
-        $patente	= ($hostDestino=='200.80.203.67')?$this->patenteAval($fields['patente']):$this->checkExactLength("patente", substr($fields['patente'], 0, 6), 6);
+//        $patente	= ($hostDestino=='200.80.203.67')?$this->patenteAval($fields['patente']):$this->checkExactLength("patente", substr($fields['patente'], 0, 6), 6);
+        $patente	= $this->patenteAval($fields['patente']);
         $cadena =
             "PC".
             $this->checkExactLength("fecha", Carbon::createFromTimestamp($fields['hora'])->format('dmyHis'), 12).
