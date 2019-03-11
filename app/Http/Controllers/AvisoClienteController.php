@@ -15,7 +15,7 @@ use App\AvisoDestinatario;
 use App\AvisoTipo;
 use App\AvisoConfiguracion;
 use App\AvisoConfiguracionTipo;
-
+Use Log;
 class AvisoClienteController extends Controller
 {
     /**
@@ -222,23 +222,26 @@ class AvisoClienteController extends Controller
     {
         /* Alta destinatarios de aviso */
         $destinatarios = $request->get('destinatarios');
-
         $this->setDestinatarios($id, $destinatarios);
-
         /* Alta de avisos unidades (si fueron enviadas) */
         $unidades = $request->get('unidades');
-
         if ( count( $unidades ) > 0 ) {
             $this->setUnidades($id, $unidades);
         }
-
         /* Alta de avisos configuraciones (si fueron enviadas) */
-        $waypoints = $request->get('waypoints');
+        if($waypoints = $request->get('waypoints')){
+        	$waypoints = $request->get('waypoints');
+        	$countWaypoints = count( $waypoints );
+	}else{
+        	$countWaypoints = 0;
+		Log::error("no hay wps");
+	}
         $velocidad = $request->get('velocidad');
-
-        $countWaypoints = count( $waypoints );
-        $countVelocidad = count( $velocidad );
-
+	if($velocidad!=''){
+       		$countVelocidad = count( $velocidad );
+	}else{
+		Log::error("la velocity es vaciaee");
+	}
         if ( $countWaypoints > 0 || $velocidad !== '' ) {
 
             $config_type = AvisoConfiguracionTipo::where('aviso_tipo_id', $request->get('aviso_tipo_id'))->first();
