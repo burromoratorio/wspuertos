@@ -211,7 +211,7 @@ class ReenvioController extends Controller
         $cadena.=(isset($fields['temperatura2']) && $fields['temperatura2']!='0' )?$this->checkExactLength("temperatura2", sprintf("%+03d", $fields['temperatura2'] > 99 ? 99 : $fields['temperatura2']), 3):"+99";
         $cadena.=(isset($fields['temperatura3']) && $fields['temperatura3']!='0' )?$this->checkExactLength("temperatura3", sprintf("%+03d", $fields['temperatura3'] > 99 ? 99 : $fields['temperatura3']), 3):"+99";
         $cadena.="|";
-        Log::info($cadena);
+        //Log::info($cadena);
         return $cadena;
     }
 
