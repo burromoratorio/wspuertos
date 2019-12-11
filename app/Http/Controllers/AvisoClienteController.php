@@ -232,14 +232,19 @@ class AvisoClienteController extends Controller
         }
         /* Alta de avisos configuraciones (si fueron enviadas) */
         if($waypoints = $request->get('waypoints')){
-                $waypoints = $request->get('waypoints');
-                $countWaypoints = count( $waypoints );
-		Log::error("llegando wp");
+           $waypoints = $request->get('waypoints');
+           $countWaypoints = count( $waypoints );
+	   Log::error("llegando wp");
         }else{
-                $countWaypoints = 0;
-                Log::error("no hay wps");
+           $countWaypoints = 0;
+           Log::error("no hay wps");
         }
         $velocidad = $request->get('velocidad');
+	if($velocidad!=''){
+       	   $countVelocidad = count( $velocidad );
+	}else{
+	   Log::error("la velocity es vaciaee");
+	}
         if ( $countWaypoints > 0 || $velocidad !== '' ) {
 
             $config_type = AvisoConfiguracionTipo::where('aviso_tipo_id', $request->get('aviso_tipo_id'))->first();
